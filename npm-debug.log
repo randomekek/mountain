@@ -1,0 +1,827 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs',
+1 verbose cli   '/usr/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'typescript' ]
+2 info using npm@1.3.10
+3 info using node@v0.10.25
+4 verbose cache add [ 'typescript', null ]
+5 verbose cache add name=undefined spec="typescript" args=["typescript",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'typescript',
+6 verbose parsed url   path: 'typescript',
+6 verbose parsed url   href: 'typescript' }
+7 silly lockFile fb9da861-typescript typescript
+8 verbose lock typescript /home/david/.npm/fb9da861-typescript.lock
+9 silly lockFile fb9da861-typescript typescript
+10 silly lockFile fb9da861-typescript typescript
+11 verbose addNamed [ 'typescript', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile b598c0ef-typescript typescript@
+14 verbose lock typescript@ /home/david/.npm/b598c0ef-typescript.lock
+15 silly addNameRange { name: 'typescript', range: '*', hasData: false }
+16 verbose url raw typescript
+17 verbose url resolving [ 'https://registry.npmjs.org/', './typescript' ]
+18 verbose url resolved https://registry.npmjs.org/typescript
+19 info trying registry request attempt 1 at 16:47:31
+20 http GET https://registry.npmjs.org/typescript
+21 http 200 https://registry.npmjs.org/typescript
+22 silly registry.get cb [ 200,
+22 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+22 silly registry.get     etag: '"BT6FXMVROC7695WN74RRVW7RJ"',
+22 silly registry.get     'content-type': 'application/json',
+22 silly registry.get     'cache-control': 'max-age=300',
+22 silly registry.get     'content-length': '920095',
+22 silly registry.get     'accept-ranges': 'bytes',
+22 silly registry.get     date: 'Sun, 09 Oct 2016 05:47:34 GMT',
+22 silly registry.get     via: '1.1 varnish',
+22 silly registry.get     age: '1',
+22 silly registry.get     connection: 'keep-alive',
+22 silly registry.get     'x-served-by': 'cache-hkg6825-HKG',
+22 silly registry.get     'x-cache': 'MISS',
+22 silly registry.get     'x-cache-hits': '0',
+22 silly registry.get     'x-timer': 'S1475992053.424361,VS0,VE1522',
+22 silly registry.get     vary: 'Accept-Encoding' } ]
+23 silly addNameRange number 2 { name: 'typescript', range: '*', hasData: true }
+24 silly addNameRange versions [ 'typescript',
+24 silly addNameRange   [ '0.8.0',
+24 silly addNameRange     '0.8.1',
+24 silly addNameRange     '0.8.1-1',
+24 silly addNameRange     '0.8.2',
+24 silly addNameRange     '0.8.3',
+24 silly addNameRange     '0.9.0',
+24 silly addNameRange     '0.9.0-1',
+24 silly addNameRange     '0.9.1',
+24 silly addNameRange     '0.9.1-1',
+24 silly addNameRange     '0.9.5',
+24 silly addNameRange     '0.9.7',
+24 silly addNameRange     '1.0.0',
+24 silly addNameRange     '1.0.1',
+24 silly addNameRange     '1.1.0-1',
+24 silly addNameRange     '1.3.0',
+24 silly addNameRange     '1.4.1',
+24 silly addNameRange     '1.5.0-alpha',
+24 silly addNameRange     '1.5.0-beta',
+24 silly addNameRange     '1.5.3',
+24 silly addNameRange     '1.6.0-dev.20150722.1',
+24 silly addNameRange     '1.6.0-dev.20150723',
+24 silly addNameRange     '1.6.0-dev.20150724',
+24 silly addNameRange     '1.6.0-dev.20150725',
+24 silly addNameRange     '1.6.0-dev.20150726',
+24 silly addNameRange     '1.6.0-dev.20150727',
+24 silly addNameRange     '1.6.0-dev.20150728',
+24 silly addNameRange     '1.6.0-dev.20150729',
+24 silly addNameRange     '1.6.0-dev.20150730',
+24 silly addNameRange     '1.6.0-dev.20150731',
+24 silly addNameRange     '1.6.0-dev.20150801',
+24 silly addNameRange     '1.6.0-dev.20150802',
+24 silly addNameRange     '1.6.0-dev.20150803',
+24 silly addNameRange     '1.6.0-dev.20150804',
+24 silly addNameRange     '1.6.0-dev.20150805',
+24 silly addNameRange     '1.6.0-dev.20150806',
+24 silly addNameRange     '1.6.0-dev.20150807',
+24 silly addNameRange     '1.6.0-dev.20150808',
+24 silly addNameRange     '1.6.0-dev.20150809',
+24 silly addNameRange     '1.6.0-dev.20150810',
+24 silly addNameRange     '1.6.0-dev.20150811',
+24 silly addNameRange     '1.6.0-dev.20150812',
+24 silly addNameRange     '1.6.0-dev.20150813',
+24 silly addNameRange     '1.6.0-dev.20150814',
+24 silly addNameRange     '1.6.0-dev.20150815',
+24 silly addNameRange     '1.6.0-dev.20150816',
+24 silly addNameRange     '1.6.0-dev.20150817',
+24 silly addNameRange     '1.6.0-dev.20150818',
+24 silly addNameRange     '1.6.0-dev.20150819',
+24 silly addNameRange     '1.6.0-dev.20150820',
+24 silly addNameRange     '1.6.0-dev.20150821',
+24 silly addNameRange     '1.6.0-dev.20150822',
+24 silly addNameRange     '1.6.0-dev.20150823',
+24 silly addNameRange     '1.6.0-dev.20150824',
+24 silly addNameRange     '1.6.0-dev.20150825',
+24 silly addNameRange     '1.7.0-dev.20150826',
+24 silly addNameRange     '1.7.0-dev.20150827',
+24 silly addNameRange     '1.7.0-dev.20150828',
+24 silly addNameRange     '1.7.0-dev.20150829',
+24 silly addNameRange     '1.7.0-dev.20150830',
+24 silly addNameRange     '1.7.0-dev.20150831',
+24 silly addNameRange     '1.7.0-dev.20150901',
+24 silly addNameRange     '1.7.0-dev.20150902',
+24 silly addNameRange     '1.6.0-beta',
+24 silly addNameRange     '1.7.0-dev.20150903',
+24 silly addNameRange     '1.7.0-dev.20150904',
+24 silly addNameRange     '1.6.0-dev.20150905',
+24 silly addNameRange     '1.6.0-dev.20150906',
+24 silly addNameRange     '1.6.0-dev.20150907',
+24 silly addNameRange     '1.6.0-dev.20150908',
+24 silly addNameRange     '1.6.0-dev.20150909',
+24 silly addNameRange     '1.6.0-dev.20150910',
+24 silly addNameRange     '1.6.0-dev.20150911',
+24 silly addNameRange     '1.6.0-dev.20150912',
+24 silly addNameRange     '1.6.0-dev.20150913',
+24 silly addNameRange     '1.6.0-dev.20150914',
+24 silly addNameRange     '1.6.0-dev.20150915',
+24 silly addNameRange     '1.7.0-dev.20150916',
+24 silly addNameRange     '1.6.2',
+24 silly addNameRange     '1.7.0-dev.20150917',
+24 silly addNameRange     '1.7.0-dev.20150918',
+24 silly addNameRange     '1.7.0-dev.20150919',
+24 silly addNameRange     '1.7.0-dev.20150920',
+24 silly addNameRange     '1.7.0-dev.20150921',
+24 silly addNameRange     '1.7.0-dev.20150922',
+24 silly addNameRange     '1.7.0-dev.20150923',
+24 silly addNameRange     '1.7.0-dev.20150924',
+24 silly addNameRange     '1.7.0-dev.20150925',
+24 silly addNameRange     '1.7.0-dev.20150926',
+24 silly addNameRange     '1.7.0-dev.20150927',
+24 silly addNameRange     '1.7.0-dev.20150928',
+24 silly addNameRange     '1.7.0-dev.20150929',
+24 silly addNameRange     '1.7.0-dev.20150930',
+24 silly addNameRange     '1.7.0-dev.20151001',
+24 silly addNameRange     '1.7.0-dev.20151002',
+24 silly addNameRange     '1.7.0-dev.20151003',
+24 silly addNameRange     '1.7.0-dev.20151004',
+24 silly addNameRange     '1.7.0-dev.20151005',
+24 silly addNameRange     '1.7.0-dev.20151006',
+24 silly addNameRange     '1.7.0-dev.20151014',
+24 silly addNameRange     '1.7.0-dev.20151015',
+24 silly addNameRange     '1.7.0-dev.20151016',
+24 silly addNameRange     '1.8.0-dev.20151017',
+24 silly addNameRange     '1.8.0-dev.20151018',
+24 silly addNameRange     '1.8.0-dev.20151019',
+24 silly addNameRange     '1.8.0-dev.20151020',
+24 silly addNameRange     '1.8.0-dev.20151021',
+24 silly addNameRange     '1.8.0-dev.20151022',
+24 silly addNameRange     '1.8.0-dev.20151023',
+24 silly addNameRange     '1.8.0-dev.20151024',
+24 silly addNameRange     '1.8.0-dev.20151025',
+24 silly addNameRange     '1.8.0-dev.20151026',
+24 silly addNameRange     '1.8.0-dev.20151027',
+24 silly addNameRange     '1.8.0-dev.20151028',
+24 silly addNameRange     '1.8.0-dev.20151029',
+24 silly addNameRange     '1.8.0-dev.20151030',
+24 silly addNameRange     '1.8.0-dev.20151031',
+24 silly addNameRange     '1.8.0-dev.20151101',
+24 silly addNameRange     '1.8.0-dev.20151102',
+24 silly addNameRange     '1.8.0-dev.20151103',
+24 silly addNameRange     '1.8.0-dev.20151104',
+24 silly addNameRange     '1.8.0-dev.20151105',
+24 silly addNameRange     '1.8.0-dev.20151106',
+24 silly addNameRange     '1.8.0-dev.20151107',
+24 silly addNameRange     '1.8.0-dev.20151108',
+24 silly addNameRange     '1.8.0-dev.20151109',
+24 silly addNameRange     '1.8.0-dev.20151110',
+24 silly addNameRange     '1.8.0-dev.20151111',
+24 silly addNameRange     '1.8.0-dev.20151112',
+24 silly addNameRange     '1.8.0-dev.20151113',
+24 silly addNameRange     '1.8.0-dev.20151114',
+24 silly addNameRange     '1.8.0-dev.20151115',
+24 silly addNameRange     '1.8.0-dev.20151116',
+24 silly addNameRange     '1.8.0-dev.20151117',
+24 silly addNameRange     '1.8.0-dev.20151118',
+24 silly addNameRange     '1.8.0-dev.20151119',
+24 silly addNameRange     '1.8.0-dev.20151120',
+24 silly addNameRange     '1.8.0-dev.20151121',
+24 silly addNameRange     '1.8.0-dev.20151122',
+24 silly addNameRange     '1.8.0-dev.20151123',
+24 silly addNameRange     '1.8.0-dev.20151124',
+24 silly addNameRange     '1.8.0-dev.20151125',
+24 silly addNameRange     '1.8.0-dev.20151126',
+24 silly addNameRange     '1.8.0-dev.20151127',
+24 silly addNameRange     '1.8.0-dev.20151128',
+24 silly addNameRange     '1.8.0-dev.20151129',
+24 silly addNameRange     '1.8.0-dev.20151130',
+24 silly addNameRange     '1.7.3',
+24 silly addNameRange     '1.8.0-dev.20151201',
+24 silly addNameRange     '1.8.0-dev.20151202',
+24 silly addNameRange     '1.8.0-dev.20151203',
+24 silly addNameRange     '1.8.0-dev.20151204',
+24 silly addNameRange     '1.8.0-dev.20151210',
+24 silly addNameRange     '1.8.0-dev.20151211',
+24 silly addNameRange     '1.8.0-dev.20151212',
+24 silly addNameRange     '1.8.0-dev.20151213',
+24 silly addNameRange     '1.8.0-dev.20151214',
+24 silly addNameRange     '1.7.5',
+24 silly addNameRange     '1.8.0-dev.20151215',
+24 silly addNameRange     '1.8.0-dev.20151216',
+24 silly addNameRange     '1.8.0-dev.20151217',
+24 silly addNameRange     '1.8.0-dev.20151218',
+24 silly addNameRange     '1.8.0-dev.20151219',
+24 silly addNameRange     '1.8.0-dev.20151220',
+24 silly addNameRange     '1.8.0-dev.20151221',
+24 silly addNameRange     '1.8.0-dev.20151222',
+24 silly addNameRange     '1.8.0-dev.20151223',
+24 silly addNameRange     '1.8.0-dev.20151224',
+24 silly addNameRange     '1.8.0-dev.20151225',
+24 silly addNameRange     '1.8.0-dev.20151226',
+24 silly addNameRange     '1.8.0-dev.20151227',
+24 silly addNameRange     '1.8.0-dev.20151228',
+24 silly addNameRange     '1.8.0-dev.20151229',
+24 silly addNameRange     '1.8.0-dev.20151230',
+24 silly addNameRange     '1.8.0-dev.20151231',
+24 silly addNameRange     '1.8.0-dev.20160101',
+24 silly addNameRange     '1.8.0-dev.20160102',
+24 silly addNameRange     '1.8.0-dev.20160103',
+24 silly addNameRange     '1.8.0-dev.20160104',
+24 silly addNameRange     '1.8.0-dev.20160105',
+24 silly addNameRange     '1.8.0-dev.20160106',
+24 silly addNameRange     '1.8.0-dev.20160107',
+24 silly addNameRange     '1.8.0-dev.20160108',
+24 silly addNameRange     '1.8.0-dev.20160109',
+24 silly addNameRange     '1.8.0-dev.20160110',
+24 silly addNameRange     '1.8.0-dev.20160111',
+24 silly addNameRange     '1.8.0-dev.20160112',
+24 silly addNameRange     '1.8.0-dev.20160113',
+24 silly addNameRange     '1.8.0-dev.20160114',
+24 silly addNameRange     '1.8.0-dev.20160115',
+24 silly addNameRange     '1.8.0-dev.20160116',
+24 silly addNameRange     '1.8.0-dev.20160117',
+24 silly addNameRange     '1.8.0-dev.20160118',
+24 silly addNameRange     '1.8.0-dev.20160119',
+24 silly addNameRange     '1.8.0-dev.20160120',
+24 silly addNameRange     '1.8.0-dev.20160121',
+24 silly addNameRange     '1.8.0-dev.20160122',
+24 silly addNameRange     '1.8.0-dev.20160123',
+24 silly addNameRange     '1.8.0-dev.20160124',
+24 silly addNameRange     '1.8.0-dev.20160125',
+24 silly addNameRange     '1.9.0-dev.20160126',
+24 silly addNameRange     '1.9.0-dev.20160127',
+24 silly addNameRange     '1.9.0-dev.20160128',
+24 silly addNameRange     '1.8.0',
+24 silly addNameRange     '1.9.0-dev.20160129',
+24 silly addNameRange     '1.9.0-dev.20160130',
+24 silly addNameRange     '1.9.0-dev.20160131',
+24 silly addNameRange     '1.9.0-dev.20160201',
+24 silly addNameRange     '1.9.0-dev.20160202',
+24 silly addNameRange     '1.9.0-dev.20160203',
+24 silly addNameRange     '1.9.0-dev.20160204',
+24 silly addNameRange     '1.9.0-dev.20160205',
+24 silly addNameRange     '1.9.0-dev.20160206',
+24 silly addNameRange     '1.9.0-dev.20160207',
+24 silly addNameRange     '1.9.0-dev.20160208',
+24 silly addNameRange     '1.9.0-dev.20160209',
+24 silly addNameRange     '1.9.0-dev.20160210',
+24 silly addNameRange     '1.9.0-dev.20160211',
+24 silly addNameRange     '1.9.0-dev.20160212',
+24 silly addNameRange     '1.9.0-dev.20160213',
+24 silly addNameRange     '1.9.0-dev.20160214',
+24 silly addNameRange     '1.9.0-dev.20160215',
+24 silly addNameRange     '1.9.0-dev.20160216',
+24 silly addNameRange     '1.9.0-dev.20160217',
+24 silly addNameRange     '1.9.0-dev.20160218',
+24 silly addNameRange     '1.9.0-dev.20160219',
+24 silly addNameRange     '1.9.0-dev.20160220',
+24 silly addNameRange     '1.9.0-dev.20160221',
+24 silly addNameRange     '1.9.0-dev.20160222',
+24 silly addNameRange     '1.8.2',
+24 silly addNameRange     '1.9.0-dev.20160223',
+24 silly addNameRange     '1.9.0-dev.20160224',
+24 silly addNameRange     '1.9.0-dev.20160225',
+24 silly addNameRange     '1.9.0-dev.20160226',
+24 silly addNameRange     '1.9.0-dev.20160227',
+24 silly addNameRange     '1.9.0-dev.20160228',
+24 silly addNameRange     '1.9.0-dev.20160229',
+24 silly addNameRange     '1.9.0-dev.20160301',
+24 silly addNameRange     '1.8.5',
+24 silly addNameRange     '1.8.6',
+24 silly addNameRange     '1.8.7',
+24 silly addNameRange     '1.9.0-dev.20160302',
+24 silly addNameRange     '1.9.0-dev.20160302.1',
+24 silly addNameRange     '1.9.0-dev.20160303',
+24 silly addNameRange     '1.9.0-dev.20160304',
+24 silly addNameRange     '1.9.0-dev.20160305',
+24 silly addNameRange     '1.9.0-dev.20160306',
+24 silly addNameRange     '1.9.0-dev.20160307',
+24 silly addNameRange     '1.9.0-dev.20160308',
+24 silly addNameRange     '1.9.0-dev.20160309',
+24 silly addNameRange     '1.9.0-dev.20160310',
+24 silly addNameRange     '1.9.0-dev.20160311',
+24 silly addNameRange     '1.9.0-dev.20160312',
+24 silly addNameRange     '1.9.0-dev.20160313',
+24 silly addNameRange     '1.9.0-dev.20160315',
+24 silly addNameRange     '1.9.0-dev.20160316',
+24 silly addNameRange     '1.8.9',
+24 silly addNameRange     '1.9.0-dev.20160317',
+24 silly addNameRange     '1.9.0-dev.20160318',
+24 silly addNameRange     '1.9.0-dev.20160319',
+24 silly addNameRange     '1.9.0-dev.20160320',
+24 silly addNameRange     '1.9.0-dev.20160321',
+24 silly addNameRange     '1.9.0-dev.20160322',
+24 silly addNameRange     '1.9.0-dev.20160323',
+24 silly addNameRange     '1.9.0-dev.20160324',
+24 silly addNameRange     '1.9.0-dev.20160325',
+24 silly addNameRange     '1.9.0-dev.20160326',
+24 silly addNameRange     '1.9.0-dev.20160327',
+24 silly addNameRange     '1.9.0-dev.20160328',
+24 silly addNameRange     '1.9.0-dev.20160329',
+24 silly addNameRange     '1.9.0-dev.20160330',
+24 silly addNameRange     '1.9.0-dev.20160331',
+24 silly addNameRange     '1.9.0-dev.20160401',
+24 silly addNameRange     '1.9.0-dev.20160402',
+24 silly addNameRange     '1.9.0-dev.20160403',
+24 silly addNameRange     '1.9.0-dev.20160404',
+24 silly addNameRange     '1.9.0-dev.20160405',
+24 silly addNameRange     '1.9.0-dev.20160406',
+24 silly addNameRange     '1.9.0-dev.20160407',
+24 silly addNameRange     '1.9.0-dev.20160408',
+24 silly addNameRange     '1.9.0-dev.20160409',
+24 silly addNameRange     '1.9.0-dev.20160411',
+24 silly addNameRange     '1.9.0-dev.20160412',
+24 silly addNameRange     '1.8.10',
+24 silly addNameRange     '1.9.0-dev.20160413',
+24 silly addNameRange     '1.9.0-dev.20160414',
+24 silly addNameRange     '1.9.0-dev.20160415',
+24 silly addNameRange     '1.9.0-dev.20160416',
+24 silly addNameRange     '1.9.0-dev.20160417',
+24 silly addNameRange     '1.9.0-dev.20160418',
+24 silly addNameRange     '1.9.0-dev.20160419',
+24 silly addNameRange     '1.9.0-dev.20160420',
+24 silly addNameRange     '1.9.0-dev.20160421',
+24 silly addNameRange     '1.9.0-dev.20160422',
+24 silly addNameRange     '1.9.0-dev.20160423',
+24 silly addNameRange     '1.9.0-dev.20160424',
+24 silly addNameRange     '1.9.0-dev.20160425',
+24 silly addNameRange     '1.9.0-dev.20160426',
+24 silly addNameRange     '1.9.0-dev.20160427',
+24 silly addNameRange     '1.9.0-dev.20160428',
+24 silly addNameRange     '1.9.0-dev.20160428-1.0',
+24 silly addNameRange     '1.9.0-dev.20160429',
+24 silly addNameRange     '1.9.0-dev.20160430',
+24 silly addNameRange     '1.9.0-dev.20160501',
+24 silly addNameRange     '1.9.0-dev.20160502',
+24 silly addNameRange     '1.9.0-dev.20160503',
+24 silly addNameRange     '1.9.0-dev.20160504',
+24 silly addNameRange     '1.9.0-dev.20160505',
+24 silly addNameRange     '1.9.0-dev.20160506',
+24 silly addNameRange     '1.9.0-dev.20160507',
+24 silly addNameRange     '1.9.0-dev.20160508',
+24 silly addNameRange     '1.9.0-dev.20160509',
+24 silly addNameRange     '1.9.0-dev.20160510',
+24 silly addNameRange     '1.9.0-dev.20160511',
+24 silly addNameRange     '1.9.0-dev.20160512',
+24 silly addNameRange     '1.9.0-dev.20160513',
+24 silly addNameRange     '1.9.0-dev.20160514',
+24 silly addNameRange     '1.9.0-dev.20160515',
+24 silly addNameRange     '1.9.0-dev.20160516',
+24 silly addNameRange     '1.9.0-dev.20160517-1.0',
+24 silly addNameRange     '1.9.0-dev.20160518-1.0',
+24 silly addNameRange     '1.9.0-dev.20160519-1.0',
+24 silly addNameRange     '1.9.0-dev.20160520-1.0',
+24 silly addNameRange     '1.9.0-dev.20160521-1.0',
+24 silly addNameRange     '1.9.0-dev.20160522-1.0',
+24 silly addNameRange     '1.9.0-dev.20160523-1.0',
+24 silly addNameRange     '1.9.0-dev.20160524-1.0',
+24 silly addNameRange     '1.9.0-dev.20160525-1.0',
+24 silly addNameRange     '1.9.0-dev.20160526-1.0',
+24 silly addNameRange     '1.9.0-dev.20160527-1.0',
+24 silly addNameRange     '1.9.0-dev.20160528-1.0',
+24 silly addNameRange     '1.9.0-dev.20160529-1.0',
+24 silly addNameRange     '1.9.0-dev.20160530-1.0',
+24 silly addNameRange     '1.9.0-dev.20160531-1.0',
+24 silly addNameRange     '1.9.0-dev.20160601-1.0',
+24 silly addNameRange     '1.9.0-dev.20160602-1.0',
+24 silly addNameRange     '1.9.0-dev.20160603-1.0',
+24 silly addNameRange     '1.9.0-dev.20160604-1.0',
+24 silly addNameRange     '1.9.0-dev.20160605-1.0',
+24 silly addNameRange     '1.9.0-dev.20160606-1.0',
+24 silly addNameRange     '1.9.0-dev.20160607-1.0',
+24 silly addNameRange     '1.9.0-dev.20160608-1.0',
+24 silly addNameRange     '1.9.0-dev.20160609-1.0',
+24 silly addNameRange     '1.9.0-dev.20160610-1.0',
+24 silly addNameRange     '1.9.0-dev.20160611-1.0',
+24 silly addNameRange     '1.9.0-dev.20160612-1.0',
+24 silly addNameRange     '1.9.0-dev.20160613-1.0',
+24 silly addNameRange     '1.9.0-dev.20160614-1.0',
+24 silly addNameRange     '1.9.0-dev.20160615-1.0',
+24 silly addNameRange     '1.9.0-dev.20160616-1.0',
+24 silly addNameRange     '1.9.0-dev.20160617-1.0',
+24 silly addNameRange     '1.9.0-dev.20160618-1.0',
+24 silly addNameRange     '1.9.0-dev.20160619-1.0',
+24 silly addNameRange     '1.9.0-dev.20160620-1.0',
+24 silly addNameRange     '1.9.0-dev.20160622-1.0',
+24 silly addNameRange     '1.9.0-dev.20160623-1.0',
+24 silly addNameRange     '1.9.0-dev.20160624-1.0',
+24 silly addNameRange     '1.9.0-dev.20160625-1.0',
+24 silly addNameRange     '1.9.0-dev.20160626-1.0',
+24 silly addNameRange     '1.9.0-dev.20160627-1.0',
+24 silly addNameRange     '2.0.0-dev.20160628',
+24 silly addNameRange     '2.0.0-dev.20160629',
+24 silly addNameRange     '2.0.0-dev.20160630',
+24 silly addNameRange     '2.0.0-dev.20160701',
+24 silly addNameRange     '2.0.0-dev.20160702',
+24 silly addNameRange     '2.0.0-dev.20160703',
+24 silly addNameRange     '2.0.0-dev.20160704',
+24 silly addNameRange     '2.0.0-dev.20160705',
+24 silly addNameRange     '2.0.0-dev.20160706',
+24 silly addNameRange     '2.0.0-dev.20160707',
+24 silly addNameRange     '2.0.0-dev.20160711',
+24 silly addNameRange     '2.0.0',
+24 silly addNameRange     '2.1.0-dev.20160712',
+24 silly addNameRange     '2.1.0-dev.20160713',
+24 silly addNameRange     '2.1.0-dev.20160714',
+24 silly addNameRange     '2.1.0-dev.20160715',
+24 silly addNameRange     '2.1.0-dev.20160716',
+24 silly addNameRange     '2.1.0-dev.20160717',
+24 silly addNameRange     '2.1.0-dev.20160718',
+24 silly addNameRange     '2.1.0-dev.20160719',
+24 silly addNameRange     '2.1.0-dev.20160720',
+24 silly addNameRange     '2.1.0-dev.20160721',
+24 silly addNameRange     '2.1.0-dev.20160722',
+24 silly addNameRange     '2.1.0-dev.20160723',
+24 silly addNameRange     '2.1.0-dev.20160724',
+24 silly addNameRange     '2.1.0-dev.20160725',
+24 silly addNameRange     '2.1.0-dev.20160726',
+24 silly addNameRange     '2.1.0-dev.20160727',
+24 silly addNameRange     '2.1.0-dev.20160728',
+24 silly addNameRange     '2.1.0-dev.20160729',
+24 silly addNameRange     '2.1.0-dev.20160730',
+24 silly addNameRange     '2.1.0-dev.20160731',
+24 silly addNameRange     '2.1.0-dev.20160801',
+24 silly addNameRange     '2.1.0-dev.20160802',
+24 silly addNameRange     '2.1.0-dev.20160803',
+24 silly addNameRange     '2.1.0-dev.20160804',
+24 silly addNameRange     '2.1.0-dev.20160805',
+24 silly addNameRange     '2.1.0-dev.20160806',
+24 silly addNameRange     '2.1.0-dev.20160807',
+24 silly addNameRange     '2.1.0-dev.20160808',
+24 silly addNameRange     '2.1.0-dev.20160809',
+24 silly addNameRange     '2.1.0-dev.20160810',
+24 silly addNameRange     '2.1.0-dev.20160811',
+24 silly addNameRange     '2.1.0-dev.20160812',
+24 silly addNameRange     '2.1.0-dev.20160813',
+24 silly addNameRange     '2.1.0-dev.20160814',
+24 silly addNameRange     '2.1.0-dev.20160815',
+24 silly addNameRange     '2.1.0-dev.20160816',
+24 silly addNameRange     '2.1.0-dev.20160817',
+24 silly addNameRange     '2.1.0-dev.20160818',
+24 silly addNameRange     '2.1.0-dev.20160819',
+24 silly addNameRange     '2.1.0-dev.20160820',
+24 silly addNameRange     '2.1.0-dev.20160821',
+24 silly addNameRange     '2.1.0-dev.20160822',
+24 silly addNameRange     '2.1.0-dev.20160823',
+24 silly addNameRange     '2.1.0-dev.20160824',
+24 silly addNameRange     '2.1.0-dev.20160825',
+24 silly addNameRange     '2.1.0-dev.20160826',
+24 silly addNameRange     '2.1.0-dev.20160827',
+24 silly addNameRange     '2.1.0-dev.20160828',
+24 silly addNameRange     '2.1.0-dev.20160829',
+24 silly addNameRange     '2.1.0-dev.20160830',
+24 silly addNameRange     '2.0.2',
+24 silly addNameRange     '2.1.0-dev.20160831',
+24 silly addNameRange     '2.1.0-dev.20160901',
+24 silly addNameRange     '2.1.0-dev.20160902',
+24 silly addNameRange     '2.1.0-dev.20160903',
+24 silly addNameRange     '2.1.0-dev.20160904',
+24 silly addNameRange     '2.1.0-dev.20160905',
+24 silly addNameRange     '2.1.0-dev.20160906',
+24 silly addNameRange     '2.1.0-dev.20160907',
+24 silly addNameRange     '2.1.0-dev.20160908',
+24 silly addNameRange     '2.1.0-dev.20160909',
+24 silly addNameRange     '2.1.0-dev.20160910',
+24 silly addNameRange     '2.1.0-dev.20160911',
+24 silly addNameRange     '2.1.0-dev.20160912',
+24 silly addNameRange     '2.1.0-dev.20160913',
+24 silly addNameRange     '2.1.0-dev.20160914',
+24 silly addNameRange     '2.1.0-dev.20160915',
+24 silly addNameRange     '2.1.0-dev.20160916',
+24 silly addNameRange     '2.1.0-dev.20160917',
+24 silly addNameRange     '2.1.0-dev.20160918',
+24 silly addNameRange     '2.1.0-dev.20160919',
+24 silly addNameRange     '2.1.0-dev.20160920',
+24 silly addNameRange     '2.1.0-dev.20160921',
+24 silly addNameRange     '2.1.0-dev.20160922',
+24 silly addNameRange     '2.0.3',
+24 silly addNameRange     '2.1.0-dev.20160923',
+24 silly addNameRange     '2.1.0-dev.20160924',
+24 silly addNameRange     '2.1.0-dev.20160925',
+24 silly addNameRange     '2.1.0-dev.20160926',
+24 silly addNameRange     '2.1.0-dev.20160927',
+24 silly addNameRange     '2.1.0-dev.20160928',
+24 silly addNameRange     '2.1.0-dev.20160929',
+24 silly addNameRange     '2.1.0-dev.20160930',
+24 silly addNameRange     '2.1.0-dev.20161001',
+24 silly addNameRange     '2.1.0-dev.20161002',
+24 silly addNameRange     '2.1.0-dev.20161003',
+24 silly addNameRange     '2.1.0-dev.20161004',
+24 silly addNameRange     '2.1.0-dev.20161005',
+24 silly addNameRange     '2.1.0-dev.20161006',
+24 silly addNameRange     '2.1.0-dev.20161007',
+24 silly addNameRange     '2.0.6-insiders.20161007',
+24 silly addNameRange     '2.1.0-dev.20161008' ] ]
+25 verbose addNamed [ 'typescript', '2.0.3' ]
+26 verbose addNamed [ '2.0.3', '2.0.3' ]
+27 silly lockFile d76b7bbf-typescript-2-0-3 typescript@2.0.3
+28 verbose lock typescript@2.0.3 /home/david/.npm/d76b7bbf-typescript-2-0-3.lock
+29 silly lockFile f6226094--typescript-typescript-2-0-3-tgz https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz
+30 verbose lock https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz /home/david/.npm/f6226094--typescript-typescript-2-0-3-tgz.lock
+31 verbose addRemoteTarball [ 'https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz',
+31 verbose addRemoteTarball   '33dec9eae86b8eee327dd419ca050c853cabd514' ]
+32 info retry fetch attempt 1 at 16:47:37
+33 verbose fetch to= /home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz
+34 http GET https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz
+35 http 200 https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz
+36 verbose tar unpack /home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz
+37 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+38 verbose lock tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package /home/david/.npm/aea4c765-57983-0-3722484912723303-package.lock
+39 silly lockFile aead8d41-57983-0-3722484912723303-tmp-tgz tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz
+40 verbose lock tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz /home/david/.npm/aead8d41-57983-0-3722484912723303-tmp-tgz.lock
+41 silly gunzTarPerm modes [ '755', '644' ]
+42 silly gunzTarPerm extractEntry package.json
+43 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+44 silly gunzTarPerm extractEntry .npmignore
+45 silly gunzTarPerm modified mode [ '.npmignore', 438, 420 ]
+46 silly gunzTarPerm extractEntry README.md
+47 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+48 silly gunzTarPerm extractEntry ThirdPartyNoticeText.txt
+49 silly gunzTarPerm modified mode [ 'ThirdPartyNoticeText.txt', 438, 420 ]
+50 silly gunzTarPerm extractEntry AUTHORS.md
+51 silly gunzTarPerm modified mode [ 'AUTHORS.md', 438, 420 ]
+52 silly gunzTarPerm extractEntry CONTRIBUTING.md
+53 silly gunzTarPerm modified mode [ 'CONTRIBUTING.md', 438, 420 ]
+54 silly gunzTarPerm extractEntry CopyrightNotice.txt
+55 silly gunzTarPerm modified mode [ 'CopyrightNotice.txt', 438, 420 ]
+56 silly gunzTarPerm extractEntry Gulpfile.ts
+57 silly gunzTarPerm modified mode [ 'Gulpfile.ts', 438, 420 ]
+58 silly gunzTarPerm extractEntry LICENSE.txt
+59 silly gunzTarPerm modified mode [ 'LICENSE.txt', 438, 420 ]
+60 silly gunzTarPerm extractEntry .mailmap
+61 silly gunzTarPerm modified mode [ '.mailmap', 438, 420 ]
+62 silly gunzTarPerm extractEntry bin/tsc
+63 silly gunzTarPerm modified mode [ 'bin/tsc', 438, 420 ]
+64 silly gunzTarPerm extractEntry bin/tsserver
+65 silly gunzTarPerm modified mode [ 'bin/tsserver', 438, 420 ]
+66 silly gunzTarPerm extractEntry lib/README.md
+67 silly gunzTarPerm modified mode [ 'lib/README.md', 438, 420 ]
+68 silly gunzTarPerm extractEntry lib/typescript.js
+69 silly gunzTarPerm modified mode [ 'lib/typescript.js', 438, 420 ]
+70 silly gunzTarPerm extractEntry lib/tsserverlibrary.js
+71 silly gunzTarPerm modified mode [ 'lib/tsserverlibrary.js', 438, 420 ]
+72 silly gunzTarPerm extractEntry lib/tsserver.js
+73 silly gunzTarPerm modified mode [ 'lib/tsserver.js', 438, 420 ]
+74 silly gunzTarPerm extractEntry lib/tsc.js
+75 silly gunzTarPerm modified mode [ 'lib/tsc.js', 438, 420 ]
+76 silly gunzTarPerm extractEntry lib/typescriptServices.js
+77 silly gunzTarPerm modified mode [ 'lib/typescriptServices.js', 438, 420 ]
+78 silly gunzTarPerm extractEntry lib/lib.es2017.sharedmemory.d.ts
+79 silly gunzTarPerm modified mode [ 'lib/lib.es2017.sharedmemory.d.ts', 438, 420 ]
+80 silly gunzTarPerm extractEntry lib/lib.es2015.d.ts
+81 silly gunzTarPerm modified mode [ 'lib/lib.es2015.d.ts', 438, 420 ]
+82 silly gunzTarPerm extractEntry lib/lib.es2015.iterable.d.ts
+83 silly gunzTarPerm modified mode [ 'lib/lib.es2015.iterable.d.ts', 438, 420 ]
+84 silly gunzTarPerm extractEntry lib/lib.es2015.promise.d.ts
+85 silly gunzTarPerm modified mode [ 'lib/lib.es2015.promise.d.ts', 438, 420 ]
+86 silly gunzTarPerm extractEntry lib/lib.es2015.proxy.d.ts
+87 silly gunzTarPerm modified mode [ 'lib/lib.es2015.proxy.d.ts', 438, 420 ]
+88 silly gunzTarPerm extractEntry lib/lib.es2015.reflect.d.ts
+89 silly gunzTarPerm modified mode [ 'lib/lib.es2015.reflect.d.ts', 438, 420 ]
+90 silly gunzTarPerm extractEntry lib/lib.es2015.symbol.d.ts
+91 silly gunzTarPerm modified mode [ 'lib/lib.es2015.symbol.d.ts', 438, 420 ]
+92 silly gunzTarPerm extractEntry lib/lib.es2015.symbol.wellknown.d.ts
+93 silly gunzTarPerm modified mode [ 'lib/lib.es2015.symbol.wellknown.d.ts', 438, 420 ]
+94 silly gunzTarPerm extractEntry lib/lib.es2016.array.include.d.ts
+95 silly gunzTarPerm modified mode [ 'lib/lib.es2016.array.include.d.ts', 438, 420 ]
+96 silly gunzTarPerm extractEntry lib/lib.d.ts
+97 silly gunzTarPerm modified mode [ 'lib/lib.d.ts', 438, 420 ]
+98 silly gunzTarPerm extractEntry lib/lib.es2017.d.ts
+99 silly gunzTarPerm modified mode [ 'lib/lib.es2017.d.ts', 438, 420 ]
+100 silly gunzTarPerm extractEntry lib/lib.es2017.object.d.ts
+101 silly gunzTarPerm modified mode [ 'lib/lib.es2017.object.d.ts', 438, 420 ]
+102 silly gunzTarPerm extractEntry lib/lib.es2015.generator.d.ts
+103 silly gunzTarPerm modified mode [ 'lib/lib.es2015.generator.d.ts', 438, 420 ]
+104 silly gunzTarPerm extractEntry lib/lib.es5.d.ts
+105 silly gunzTarPerm modified mode [ 'lib/lib.es5.d.ts', 438, 420 ]
+106 silly gunzTarPerm extractEntry lib/lib.es6.d.ts
+107 silly gunzTarPerm modified mode [ 'lib/lib.es6.d.ts', 438, 420 ]
+108 silly gunzTarPerm extractEntry lib/lib.scripthost.d.ts
+109 silly gunzTarPerm modified mode [ 'lib/lib.scripthost.d.ts', 438, 420 ]
+110 silly gunzTarPerm extractEntry lib/lib.webworker.d.ts
+111 silly gunzTarPerm modified mode [ 'lib/lib.webworker.d.ts', 438, 420 ]
+112 silly gunzTarPerm extractEntry lib/lib.es2015.core.d.ts
+113 silly gunzTarPerm modified mode [ 'lib/lib.es2015.core.d.ts', 438, 420 ]
+114 silly gunzTarPerm extractEntry lib/lib.es2015.collection.d.ts
+115 silly gunzTarPerm modified mode [ 'lib/lib.es2015.collection.d.ts', 438, 420 ]
+116 silly gunzTarPerm extractEntry lib/tsserverlibrary.d.ts
+117 silly gunzTarPerm modified mode [ 'lib/tsserverlibrary.d.ts', 438, 420 ]
+118 silly gunzTarPerm extractEntry lib/lib.dom.iterable.d.ts
+119 silly gunzTarPerm modified mode [ 'lib/lib.dom.iterable.d.ts', 438, 420 ]
+120 silly gunzTarPerm extractEntry lib/typescript.d.ts
+121 silly gunzTarPerm modified mode [ 'lib/typescript.d.ts', 438, 420 ]
+122 silly gunzTarPerm extractEntry lib/lib.dom.d.ts
+123 silly gunzTarPerm modified mode [ 'lib/lib.dom.d.ts', 438, 420 ]
+124 silly gunzTarPerm extractEntry lib/typescriptServices.d.ts
+125 silly gunzTarPerm modified mode [ 'lib/typescriptServices.d.ts', 438, 420 ]
+126 silly gunzTarPerm extractEntry lib/lib.es2016.d.ts
+127 silly gunzTarPerm modified mode [ 'lib/lib.es2016.d.ts', 438, 420 ]
+128 silly gunzTarPerm extractEntry test.config
+129 silly gunzTarPerm modified mode [ 'test.config', 438, 420 ]
+130 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+131 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+132 silly lockFile aead8d41-57983-0-3722484912723303-tmp-tgz tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz
+133 silly lockFile aead8d41-57983-0-3722484912723303-tmp-tgz tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/tmp.tgz
+134 verbose tar pack [ '/home/david/.npm/typescript/2.0.3/package.tgz',
+134 verbose tar pack   '/home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package' ]
+135 verbose tarball /home/david/.npm/typescript/2.0.3/package.tgz
+136 verbose folder /home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+137 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+138 verbose lock tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package /home/david/.npm/aea4c765-57983-0-3722484912723303-package.lock
+139 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+140 verbose lock tar:///home/david/.npm/typescript/2.0.3/package.tgz /home/david/.npm/c9678b27-npm-typescript-2-0-3-package-tgz.lock
+141 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+142 silly lockFile aea4c765-57983-0-3722484912723303-package tar:///home/david/tmp/npm-3533-Q2kND5z3/1475992057983-0.3722484912723303/package
+143 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+144 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+145 silly lockFile e9e2c778-vid-npm-typescript-2-0-3-package /home/david/.npm/typescript/2.0.3/package
+146 verbose lock /home/david/.npm/typescript/2.0.3/package /home/david/.npm/e9e2c778-vid-npm-typescript-2-0-3-package.lock
+147 silly lockFile e9e2c778-vid-npm-typescript-2-0-3-package /home/david/.npm/typescript/2.0.3/package
+148 silly lockFile e9e2c778-vid-npm-typescript-2-0-3-package /home/david/.npm/typescript/2.0.3/package
+149 verbose tar unpack /home/david/.npm/typescript/2.0.3/package.tgz
+150 silly lockFile 17bcc0d7-vid-npm-typescript-2-0-3-package tar:///home/david/.npm/typescript/2.0.3/package
+151 verbose lock tar:///home/david/.npm/typescript/2.0.3/package /home/david/.npm/17bcc0d7-vid-npm-typescript-2-0-3-package.lock
+152 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+153 verbose lock tar:///home/david/.npm/typescript/2.0.3/package.tgz /home/david/.npm/c9678b27-npm-typescript-2-0-3-package-tgz.lock
+154 silly gunzTarPerm modes [ '755', '644' ]
+155 silly gunzTarPerm extractEntry package.json
+156 silly gunzTarPerm extractEntry .npmignore
+157 silly gunzTarPerm extractEntry README.md
+158 silly gunzTarPerm extractEntry LICENSE.txt
+159 silly gunzTarPerm extractEntry CopyrightNotice.txt
+160 silly gunzTarPerm extractEntry Gulpfile.ts
+161 silly gunzTarPerm extractEntry .mailmap
+162 silly gunzTarPerm extractEntry AUTHORS.md
+163 silly gunzTarPerm extractEntry ThirdPartyNoticeText.txt
+164 silly gunzTarPerm extractEntry bin/tsc
+165 silly gunzTarPerm extractEntry bin/tsserver
+166 silly gunzTarPerm extractEntry lib/README.md
+167 silly gunzTarPerm extractEntry lib/typescript.js
+168 silly gunzTarPerm extractEntry lib/tsserverlibrary.js
+169 silly gunzTarPerm extractEntry lib/tsserver.js
+170 silly gunzTarPerm extractEntry lib/tsc.js
+171 silly gunzTarPerm extractEntry lib/typescriptServices.js
+172 silly gunzTarPerm extractEntry lib/lib.es2017.sharedmemory.d.ts
+173 silly gunzTarPerm extractEntry lib/lib.es2015.d.ts
+174 silly gunzTarPerm extractEntry lib/lib.es2015.iterable.d.ts
+175 silly gunzTarPerm extractEntry lib/lib.es2015.promise.d.ts
+176 silly gunzTarPerm extractEntry lib/lib.es2015.proxy.d.ts
+177 silly gunzTarPerm extractEntry lib/lib.es2015.reflect.d.ts
+178 silly gunzTarPerm extractEntry lib/lib.es2015.symbol.d.ts
+179 silly gunzTarPerm extractEntry lib/lib.es2015.symbol.wellknown.d.ts
+180 silly gunzTarPerm extractEntry lib/lib.es2016.array.include.d.ts
+181 silly gunzTarPerm extractEntry lib/lib.d.ts
+182 silly gunzTarPerm extractEntry lib/lib.es2017.d.ts
+183 silly gunzTarPerm extractEntry lib/lib.es2017.object.d.ts
+184 silly gunzTarPerm extractEntry lib/lib.es2015.generator.d.ts
+185 silly gunzTarPerm extractEntry lib/lib.es5.d.ts
+186 silly gunzTarPerm extractEntry lib/lib.es6.d.ts
+187 silly gunzTarPerm extractEntry lib/lib.scripthost.d.ts
+188 silly gunzTarPerm extractEntry lib/lib.webworker.d.ts
+189 silly gunzTarPerm extractEntry lib/lib.es2015.core.d.ts
+190 silly gunzTarPerm extractEntry lib/lib.es2015.collection.d.ts
+191 silly gunzTarPerm extractEntry lib/tsserverlibrary.d.ts
+192 silly gunzTarPerm extractEntry lib/lib.dom.iterable.d.ts
+193 silly gunzTarPerm extractEntry lib/typescript.d.ts
+194 silly gunzTarPerm extractEntry lib/lib.dom.d.ts
+195 silly gunzTarPerm extractEntry lib/typescriptServices.d.ts
+196 silly gunzTarPerm extractEntry lib/lib.es2016.d.ts
+197 silly gunzTarPerm extractEntry CONTRIBUTING.md
+198 silly gunzTarPerm extractEntry test.config
+199 silly lockFile 17bcc0d7-vid-npm-typescript-2-0-3-package tar:///home/david/.npm/typescript/2.0.3/package
+200 silly lockFile 17bcc0d7-vid-npm-typescript-2-0-3-package tar:///home/david/.npm/typescript/2.0.3/package
+201 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+202 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+203 verbose chmod /home/david/.npm/typescript/2.0.3/package.tgz 644
+204 verbose chown /home/david/.npm/typescript/2.0.3/package.tgz [ 1000, 1000 ]
+205 silly lockFile f6226094--typescript-typescript-2-0-3-tgz https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz
+206 silly lockFile f6226094--typescript-typescript-2-0-3-tgz https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz
+207 silly lockFile d76b7bbf-typescript-2-0-3 typescript@2.0.3
+208 silly lockFile d76b7bbf-typescript-2-0-3 typescript@2.0.3
+209 silly lockFile b598c0ef-typescript typescript@
+210 silly lockFile b598c0ef-typescript typescript@
+211 silly resolved [ { name: 'typescript',
+211 silly resolved     author: { name: 'Microsoft Corp.' },
+211 silly resolved     homepage: 'http://typescriptlang.org/',
+211 silly resolved     version: '2.0.3',
+211 silly resolved     license: 'Apache-2.0',
+211 silly resolved     description: 'TypeScript is a language for application scale JavaScript development',
+211 silly resolved     keywords: [ 'TypeScript', 'Microsoft', 'compiler', 'language', 'javascript' ],
+211 silly resolved     bugs: { url: 'https://github.com/Microsoft/TypeScript/issues' },
+211 silly resolved     repository:
+211 silly resolved      { type: 'git',
+211 silly resolved        url: 'https://github.com/Microsoft/TypeScript.git' },
+211 silly resolved     main: './lib/typescript.js',
+211 silly resolved     typings: './lib/typescript.d.ts',
+211 silly resolved     bin: { tsc: './bin/tsc', tsserver: './bin/tsserver' },
+211 silly resolved     engines: { node: '>=0.8.0' },
+211 silly resolved     devDependencies:
+211 silly resolved      { '@types/browserify': 'latest',
+211 silly resolved        '@types/chai': 'latest',
+211 silly resolved        '@types/convert-source-map': 'latest',
+211 silly resolved        '@types/del': 'latest',
+211 silly resolved        '@types/glob': 'latest',
+211 silly resolved        '@types/gulp': 'latest',
+211 silly resolved        '@types/gulp-concat': 'latest',
+211 silly resolved        '@types/gulp-help': 'latest',
+211 silly resolved        '@types/gulp-newer': 'latest',
+211 silly resolved        '@types/gulp-sourcemaps': 'latest',
+211 silly resolved        '@types/gulp-typescript': 'latest',
+211 silly resolved        '@types/merge2': 'latest',
+211 silly resolved        '@types/minimatch': 'latest',
+211 silly resolved        '@types/minimist': 'latest',
+211 silly resolved        '@types/mkdirp': 'latest',
+211 silly resolved        '@types/mocha': 'latest',
+211 silly resolved        '@types/node': 'latest',
+211 silly resolved        '@types/q': 'latest',
+211 silly resolved        '@types/run-sequence': 'latest',
+211 silly resolved        '@types/through2': 'latest',
+211 silly resolved        browserify: 'latest',
+211 silly resolved        chai: 'latest',
+211 silly resolved        'convert-source-map': 'latest',
+211 silly resolved        del: 'latest',
+211 silly resolved        gulp: 'latest',
+211 silly resolved        'gulp-clone': 'latest',
+211 silly resolved        'gulp-concat': 'latest',
+211 silly resolved        'gulp-help': 'latest',
+211 silly resolved        'gulp-insert': 'latest',
+211 silly resolved        'gulp-newer': 'latest',
+211 silly resolved        'gulp-sourcemaps': 'latest',
+211 silly resolved        'gulp-typescript': 'latest',
+211 silly resolved        'into-stream': 'latest',
+211 silly resolved        istanbul: 'latest',
+211 silly resolved        jake: 'latest',
+211 silly resolved        merge2: 'latest',
+211 silly resolved        minimist: 'latest',
+211 silly resolved        mkdirp: 'latest',
+211 silly resolved        mocha: 'latest',
+211 silly resolved        'mocha-fivemat-progress-reporter': 'latest',
+211 silly resolved        q: 'latest',
+211 silly resolved        'run-sequence': 'latest',
+211 silly resolved        sorcery: 'latest',
+211 silly resolved        through2: 'latest',
+211 silly resolved        'travis-fold': 'latest',
+211 silly resolved        'ts-node': 'latest',
+211 silly resolved        tslint: '3.15.1',
+211 silly resolved        typescript: '2.0.*' },
+211 silly resolved     scripts:
+211 silly resolved      { pretest: 'jake tests',
+211 silly resolved        test: 'jake runtests-parallel',
+211 silly resolved        build: 'npm run build:compiler && npm run build:tests',
+211 silly resolved        'build:compiler': 'jake local',
+211 silly resolved        'build:tests': 'jake tests',
+211 silly resolved        start: 'node lib/tsc',
+211 silly resolved        clean: 'jake clean',
+211 silly resolved        gulp: 'gulp',
+211 silly resolved        jake: 'jake',
+211 silly resolved        lint: 'jake lint',
+211 silly resolved        'setup-hooks': 'node scripts/link-hooks.js' },
+211 silly resolved     browser: { buffer: false, fs: false, os: false, path: false },
+211 silly resolved     readme: '[![Build Status](https://travis-ci.org/Microsoft/TypeScript.svg?branch=master)](https://travis-ci.org/Microsoft/TypeScript)\r\n[![npm version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript)\r\n[![Downloads](https://img.shields.io/npm/dm/TypeScript.svg)](https://www.npmjs.com/package/typescript)\r\n\r\n# TypeScript\r\n\r\n[![Join the chat at https://gitter.im/Microsoft/TypeScript](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Microsoft/TypeScript?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)\r\n\r\n[TypeScript](http://www.typescriptlang.org/) is a language for application-scale JavaScript. TypeScript adds optional types, classes, and modules to JavaScript. TypeScript supports tools for large-scale JavaScript applications for any browser, for any host, on any OS. TypeScript compiles to readable, standards-based JavaScript. Try it out at the [playground](http://www.typescriptlang.org/Playground), and stay up to date via [our blog](https://blogs.msdn.microsoft.com/typescript) and [Twitter account](https://twitter.com/typescriptlang).\r\n\r\n## Installing\r\n\r\nFor the latest stable version:\r\n\r\n```\r\nnpm install -g typescript\r\n```\r\n\r\nFor our nightly builds:\r\n\r\n```\r\nnpm install -g typescript@next\r\n```\r\n\r\n## Contribute\r\n\r\nThere are many ways to [contribute](https://github.com/Microsoft/TypeScript/blob/master/CONTRIBUTING.md) to TypeScript.\r\n* [Submit bugs](https://github.com/Microsoft/TypeScript/issues) and help us verify fixes as they are checked in.\r\n* Review the [source code changes](https://github.com/Microsoft/TypeScript/pulls).\r\n* Engage with other TypeScript users and developers on [StackOverflow](http://stackoverflow.com/questions/tagged/typescript). \r\n* Join the [#typescript](http://twitter.com/#!/search/realtime/%23typescript) discussion on Twitter.\r\n* [Contribute bug fixes](https://github.com/Microsoft/TypeScript/blob/master/CONTRIBUTING.md).\r\n* Read the language specification ([docx](https://github.com/Microsoft/TypeScript/blob/master/doc/TypeScript%20Language%20Specification.docx?raw=true), [pdf](https://github.com/Microsoft/TypeScript/blob/master/doc/TypeScript%20Language%20Specification.pdf?raw=true), [md](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md)).\r\n\r\n\r\n## Documentation\r\n\r\n*  [Quick tutorial](http://www.typescriptlang.org/Tutorial)\r\n*  [Programming handbook](http://www.typescriptlang.org/Handbook)\r\n*  [Language specification](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md)\r\n*  [Homepage](http://www.typescriptlang.org/)\r\n\r\n## Building\r\n\r\nIn order to build the TypeScript compiler, ensure that you have [Git](http://git-scm.com/downloads) and [Node.js](http://nodejs.org/) installed.\r\n\r\nClone a copy of the repo:\r\n\r\n```\r\ngit clone https://github.com/Microsoft/TypeScript.git\r\n```\r\n\r\nChange to the TypeScript directory:\r\n\r\n```\r\ncd TypeScript\r\n```\r\n\r\nInstall Gulp tools and dev dependencies:\r\n\r\n```\r\nnpm install -g gulp\r\nnpm install\r\n```\r\n\r\nUse one of the following to build and test:\r\n\r\n```\r\ngulp local            # Build the compiler into built/local \r\ngulp clean            # Delete the built compiler \r\ngulp LKG              # Replace the last known good with the built one.\r\n                      # Bootstrapping step to be executed when the built compiler reaches a stable state.\r\ngulp tests            # Build the test infrastructure using the built compiler. \r\ngulp runtests         # Run tests using the built compiler and test infrastructure. \r\n                      # You can override the host or specify a test for this command. \r\n                      # Use host=<hostName> or tests=<testPath>. \r\ngulp runtests-browser # Runs the tests using the built run.js file. Syntax is gulp runtests. Optional\r\n                        parameters \'host=\', \'tests=[regex], reporter=[list|spec|json|<more>]\'.\r\ngulp baseline-accept  # This replaces the baseline test results with the results obtained from gulp runtests.\r\ngulp lint             # Runs tslint on the TypeScript source.\r\ngulp help             # List the above commands. \r\n```\r\n\r\n\r\n## Usage\r\n\r\n```shell\r\nnode built/local/tsc.js hello.ts\r\n```\r\n\r\n\r\n## Roadmap\r\n\r\nFor details on our planned features and future direction please refer to our [roadmap](https://github.com/Microsoft/TypeScript/wiki/Roadmap).\r\n',
+211 silly resolved     readmeFilename: 'README.md',
+211 silly resolved     _id: 'typescript@2.0.3',
+211 silly resolved     dist: { shasum: 'a25d2a9d722090d1743eb6776bdf323995ed9130' },
+211 silly resolved     _from: 'typescript@',
+211 silly resolved     _resolved: 'https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz' } ]
+212 info install typescript@2.0.3 into /usr/local/lib
+213 info installOne typescript@2.0.3
+214 info /usr/local/lib/node_modules/typescript unbuild
+215 verbose tar unpack /home/david/.npm/typescript/2.0.3/package.tgz
+216 silly lockFile 2d878377-ocal-lib-node-modules-typescript tar:///usr/local/lib/node_modules/typescript
+217 verbose lock tar:///usr/local/lib/node_modules/typescript /home/david/.npm/2d878377-ocal-lib-node-modules-typescript.lock
+218 silly lockFile c9678b27-npm-typescript-2-0-3-package-tgz tar:///home/david/.npm/typescript/2.0.3/package.tgz
+219 verbose lock tar:///home/david/.npm/typescript/2.0.3/package.tgz /home/david/.npm/c9678b27-npm-typescript-2-0-3-package-tgz.lock
+220 silly gunzTarPerm modes [ '755', '644' ]
+221 error Error: EACCES, mkdir '/usr/local/lib/node_modules/typescript'
+221 error  { [Error: EACCES, mkdir '/usr/local/lib/node_modules/typescript']
+221 error   errno: 3,
+221 error   code: 'EACCES',
+221 error   path: '/usr/local/lib/node_modules/typescript',
+221 error   fstream_type: 'Directory',
+221 error   fstream_path: '/usr/local/lib/node_modules/typescript',
+221 error   fstream_class: 'DirWriter',
+221 error   fstream_stack:
+221 error    [ '/usr/lib/nodejs/fstream/lib/dir-writer.js:36:23',
+221 error      '/usr/lib/nodejs/mkdirp/index.js:37:53',
+221 error      'Object.oncomplete (fs.js:107:15)' ] }
+222 error Please try running this command again as root/Administrator.
+223 error System Linux 3.8.11
+224 error command "/usr/bin/nodejs" "/usr/bin/npm" "install" "-g" "typescript"
+225 error cwd /home/david/Downloads/thoughts/shaders/mountain
+226 error node -v v0.10.25
+227 error npm -v 1.3.10
+228 error path /usr/local/lib/node_modules/typescript
+229 error fstream_path /usr/local/lib/node_modules/typescript
+230 error fstream_type Directory
+231 error fstream_class DirWriter
+232 error code EACCES
+233 error errno 3
+234 error stack Error: EACCES, mkdir '/usr/local/lib/node_modules/typescript'
+235 error fstream_stack /usr/lib/nodejs/fstream/lib/dir-writer.js:36:23
+235 error fstream_stack /usr/lib/nodejs/mkdirp/index.js:37:53
+235 error fstream_stack Object.oncomplete (fs.js:107:15)
+236 verbose exit [ 3, true ]
