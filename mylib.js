@@ -75,7 +75,7 @@ function Ezgl(gl) {
     return {constructor: AttributeArray, buffer, type, normalized, stride, offset};
   }
 
-  function bind({program, bindings={}}) {
+  function bind(program, bindings) {
     gl.useProgram(program.program);
 
     let texture = 0;

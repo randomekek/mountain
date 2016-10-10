@@ -50,26 +50,20 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
   function drawScene() {
     ezgl.bindRenderTargets(renderTargets);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    ezgl.bind({
-      program: shadertoy,
-      bindings: {
-        position: ezgl.AttributeArray({ buffer: vertexBuffer }),
-        size: [50, 50],
-      },
+    ezgl.bind(shadertoy, {
+      position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+      size: [50, 50],
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    ezgl.bind({
-      program: program,
-      bindings: {
-        position: ezgl.AttributeArray({ buffer: vertexBuffer }),
-        time: [Date.now()/1000.0 % 100],
-        rendered: renderTargets.textures[0],
-        noise,
-        size: [200, 100],
-      },
+    ezgl.bind(program, {
+      position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+      time: [Date.now()/1000.0 % 100],
+      rendered: renderTargets.textures[0],
+      noise,
+      size: [200, 100],
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
