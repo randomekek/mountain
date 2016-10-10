@@ -1,16 +1,13 @@
-const Ezgl = function(gl) {
-  const glsl_library = fixName({
-    perspective: `
-      vec2 $name(vec2 aa) {
-        return aa + vec2(0.1, 0.0);
-      }`,
-  });
+function Ezgl(gl) {
+  const offscreen = gl.createFramebuffer();
+  const glsl_library = {};
+  addLibrary('perspective', `
+    vec2 $name(vec2 aa) {
+      return aa + vec2(0.1, 0.0);
+    }`);
 
-  function fixName(obj) {
-    for (let key in obj) {
-      obj[key] = obj[key].replace('$name', 'import_' + key);
-    }
-    return obj;
+  function addLibrary(name, func) {
+    glsl_library[name] = func.replace('$name', 'import_' + name);
   }
 
   function preprocessSource(code) {
@@ -19,7 +16,8 @@ const Ezgl = function(gl) {
       imports[method] = glsl_library[method];
       return `import_${method}(`;
     });
-    return Object.values(imports).join('\n') + '\n// == Code ==\n' + code;
+    const import_list = Object.keys(imports).map(key => imports[key]);
+    return import_list.join('\n') + '\n// == Code ==\n' + code;
   }
 
   function compileShader(shader_type, code) {
@@ -149,7 +147,7 @@ const Ezgl = function(gl) {
     return buffer;
   }
 
-  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT]}={}) {
+  function createTexture({target=gl.TEXTURE_2D, mag=gl.NEAREST_MIPMAP_LINEAR, min=gl.NEAREST_MIPMAP_LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT]}={}) {
     const texture = gl.createTexture();
     gl.bindTexture(target, texture)
     gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, mag);
@@ -162,22 +160,57 @@ const Ezgl = function(gl) {
     return texture;
   }
 
-  function loadImageFromUrl({texture, url, level=0, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE}) {
-    const img = new Image();
-    img.onload = function() {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, img);
-    };
-    img.src = url;
+  function loadImages(urls, callback) {
+    let images = {}, total = Object.keys(urls).length, count = 0;
+    for (let key in urls) {
+      const img = new Image();
+      images[key] = img;
+      img.onload = function() {
+        count++;
+        if(count == total) {
+          callback(images);
+        }
+      };
+      img.src = urls[key];
+    }
+  }
+
+  function texImage2D({texture, image, level=0, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE}) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, image);
     return texture;
   }
 
-  return {createProgram, createBuffer, createTexture, loadImageFromUrl, Attribute, drawArrays}
+  function createRenderTargets({width, height, count=1, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
+    let targets = {textures: [], depth: null};
+    for (let i=0; i<count; i++) {
+      const texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
+      targets.textures.push(texture);
+    }
+    if (depth_buffer) {
+      targets.depth = gl.createRenderbuffer();
+      gl.bindRenderbuffer(gl.RENDERBUFFER, targets.depth);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+    }
+    return targets;
+  }
+
+  function bindRenderTargets(renderTargets) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, offscreen);
+    for (let i=0; i<renderTargets.textures.length; i++) {
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, renderTargets.textures[i], 0);
+    }
+    if (renderTargets.depth) {
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderTargets.depth);
+    }
+  }
+
+  return {createProgram, createBuffer, createTexture, loadImages, texImage2D, Attribute, drawArrays, createRenderTargets, bindRenderTargets};
 }
 
-// TODO:
-// render-to-texture
-// renderbuffer vs framebuffer
+// TODO: 3d texture, srgb, instanced rendering
 
 function webgl_examples() {
   // depth
@@ -199,7 +232,4 @@ function webgl_examples() {
   gl.enable(gl.CULL_FACE);
   gl.frontFace(gl.CCW);
   gl.cullFace(gl.BACK);
-
-  // stencil, scissor and viewport
-  // not sure why I care
 }

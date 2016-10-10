@@ -4,14 +4,14 @@ const gl = document.querySelector('#canvas').getContext('webgl2'), ezgl = Ezgl(g
 
 const program = ezgl.createProgram(
   vertex=`
-    precision mediump float;
+    precision highp float;
     attribute vec2 position;
 
     void main () {
       gl_Position = vec4($perspective(position), 0, 1);
     }`,
   fragment=`
-    precision mediump float;
+    precision highp float;
     uniform float times;
     uniform sampler2D noise;
 
@@ -27,28 +27,27 @@ const vertexBuffer = ezgl.createBuffer(new Float32Array([
      1.0, -1.0, // BR
 ]));
 
-const texture = ezgl.loadImageFromUrl({
-  url: 'tex16.png',
-  texture: ezgl.createTexture(),
+ezgl.loadImages({ noise: 'tex16.png' }, ({noise}) => {
+  const texture = ezgl.texImage2D({ texture: ezgl.createTexture(), image: noise });
+
+  function drawScene() {
+    gl.clearColor(0.6, 0.6, 0.9, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    ezgl.drawArrays({
+      program,
+      count: 4,
+      attributes: {
+        position: ezgl.Attribute({ buffer: vertexBuffer }),
+      },
+      uniforms: {
+        times: Date.now()/1000.0 % 100,
+        noise: texture,
+      },
+      mode: gl.TRIANGLE_STRIP,
+    });
+  }
+
+  const refresh = false ? setInterval(drawScene, 1000/60) : drawScene();
 });
-
-function drawScene() {
-  gl.clearColor(0.6, 0.6, 0.9, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  ezgl.drawArrays({
-    program,
-    count: 4,
-    attributes: {
-      position: ezgl.Attribute({ buffer: vertexBuffer }),
-    },
-    uniforms: {
-      times: Date.now()/1000.0 % 100,
-      noise: texture,
-    },
-    mode: gl.TRIANGLE_STRIP,
-  });
-}
-
-const refresh = false ? setInterval(drawScene, 1000/60) : drawScene();
 
 } ());
