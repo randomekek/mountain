@@ -1,6 +1,9 @@
 function Ezgl(gl) {
   const offscreen = gl.createFramebuffer();
   const glsl_library = {};
+  const attribute = Symbol('attribute'), uniform = Symbol('uniform');
+  const sizes = {'float': 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
+
   addLibrary('perspective', `
     vec2 $name(vec2 aa) {
       return aa + vec2(0.1, 0.0);
@@ -22,7 +25,7 @@ function Ezgl(gl) {
 
   function compileShader(shader_type, code) {
     const shader = gl.createShader(shader_type);
-    code = preprocessSource(code);
+    code = preprocessSource('precision highp float;\n' + code);
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -42,35 +45,22 @@ function Ezgl(gl) {
     return shader;
   }
 
-  function getAttributes(program, code) {
-    let attributes = {}, match;
-    const re = /attribute (float|vec[234]) ([^;]*);/g;
+  function getBindings(program, code) {
+    let bindings = {}, match;
+    const re = /(attribute|uniform) (float|vec[234]|sampler[123]D) ([^;]*);/g;
     while (match = re.exec(code)) {
-      const [, type, name] = match;
-      const index = gl.getAttribLocation(program, name);
+      const [, binding_type_str, type, name] = match;
+      const binding_type = {attribute, uniform}[binding_type_str];
+      const index = binding_type == attribute ? gl.getAttribLocation(program, name) : gl.getUniformLocation(program, name);
       if (index == -1) {
-        throw `Could not bind attribute "${name}" in shader`;
+        throw `Could not locate ${binding_type_str} "${name}" in shader code`;
       }
-      gl.enableVertexAttribArray(index);
-      attributes[name] = {index, type};
-    }
-    return attributes;
-  }
-
-  function getUniforms(program, code) {
-    let uniforms = {}, match;
-    const re = /uniform (float|vec[234]|sampler[123]D|samplerCube) ([^;]*);/g;
-    while (match = re.exec(code)) {
-      const [, type, name] = match;
-      if (!(name in uniforms)) {
-        const index = gl.getUniformLocation(program, name);
-        if (index == -1) {
-          throw `Could not bind attribute "${name}" in shader`;
-        }
-        uniforms[name] = {index, type};
+      if (binding_type == attribute) {
+        gl.enableVertexAttribArray(index);
       }
+      bindings[name] = {binding_type, type, index};
     }
-    return uniforms;
+    return bindings;
   }
 
   function createProgram(vertex, fragment) {
@@ -78,66 +68,49 @@ function Ezgl(gl) {
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
     gl.linkProgram(program);
-    return {
-      program,
-      attributes: getAttributes(program, vertex),
-      uniforms: getUniforms(program, vertex + fragment)};
+    return {program, bindings: getBindings(program, vertex + fragment)};
   }
 
-  function Attribute({buffer, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
-    return {buffer, type, normalized, stride, offset};
+  function AttributeArray({buffer, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
+    return {constructor: AttributeArray, buffer, type, normalized, stride, offset};
   }
 
-  const sizes = {'float': 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
-
-  function drawArrays({program, count, attributes={}, uniforms={}, mode=gl.TRIANGLES, first=0}) {
+  function bind({program, bindings={}}) {
     gl.useProgram(program.program);
 
-    for (let name in attributes) {
-      const a = attributes[name];
-      const {index, type} = program.attributes[name];
-      gl.bindBuffer(gl.ARRAY_BUFFER, a.buffer);
-      gl.vertexAttribPointer(index, sizes[type], a.type, a.normalized, a.stride, a.offset);
-      // TODO: handle const
-    }
-
     let texture = 0;
-    for (let name in uniforms) {
-      const value = uniforms[name];
-      const {index, type} = program.uniforms[name];
-      if (type == 'float') {
-        console.assert(typeof value == 'number');
-        gl.uniform1f(index, value);
-      } else if (type == 'vec2') {
-        console.assert(value.length == 2);
-        gl.uniform2fv(index, value);
-      } else if (type == 'vec3') {
-        console.assert(value.length == 3);
-        gl.uniform3fv(index, value);
-      } else if (type == 'vec4') {
-        console.assert(value.length == 4);
-        gl.uniform4fv(index, value);
-      } else if (type == 'mat2') {
-        console.assert(value.length == 4);
-        gl.uniformMatrix2fv(index, value);
-      } else if (type == 'mat3') {
-        console.assert(value.length == 9);
-        gl.uniformMatrix3fv(index, value);
-      } else if (type == 'mat4') {
-        console.assert(value.length == 16);
-        gl.uniformMatrix4fv(index, value);
-      } else if (type == 'sampler2D') {
-        console.assert(value.constructor == WebGLTexture);
-        gl.uniform1i(index, texture);
-        gl.activeTexture(gl.TEXTURE0 + texture);
-        gl.bindTexture(gl.TEXTURE_2D, value);
-        texture++;
+    for (let name in bindings) {
+      const value = bindings[name];
+      const {binding_type, type, index} = program.bindings[name];
+      if (binding_type == attribute) {
+        if (value.constructor == AttributeArray) {
+          console.assert(value.buffer.constructor == WebGLBuffer);
+          gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
+          gl.vertexAttribPointer(index, sizes[type], value.type, value.normalized, value.stride, value.offset);
+        } else {
+          // TODO: gl.vertexAttrib2fv(...)
+        }
       } else {
-        throw `Unknown type "${type}" for variable "${name}"`;
+        if (type == 'sampler2D') {
+          console.assert(value.constructor == WebGLTexture);
+          gl.uniform1i(index, texture);
+          gl.activeTexture(gl.TEXTURE0 + texture);
+          gl.bindTexture(gl.TEXTURE_2D, value);
+          texture++;
+        } else {
+          console.assert(value.length == sizes[type]);
+          switch (type) {
+            case 'float': gl.uniform1fv(index, value); break;
+            case 'vec2': gl.uniform2fv(index, value); break;
+            case 'vec3': gl.uniform3fv(index, value); break;
+            case 'vec4': gl.uniform4fv(index, value); break;
+            case 'mat2': gl.uniformMatrix2fv(index, value); break;
+            case 'mat3': gl.uniformMatrix3fv(index, value); break;
+            case 'mat4': gl.uniformMatrix4fv(index, value); break;
+          }
+        }
       }
     }
-
-    gl.drawArrays(mode, first, count);
   }
 
   function createBuffer(data, hint=gl.STATIC_DRAW) {
@@ -147,7 +120,7 @@ function Ezgl(gl) {
     return buffer;
   }
 
-  function createTexture({target=gl.TEXTURE_2D, mag=gl.NEAREST_MIPMAP_LINEAR, min=gl.NEAREST_MIPMAP_LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT]}={}) {
+  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT]}={}) {
     const texture = gl.createTexture();
     gl.bindTexture(target, texture)
     gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, mag);
@@ -181,11 +154,10 @@ function Ezgl(gl) {
     return texture;
   }
 
-  function createRenderTargets({width, height, count=1, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
+  function createRenderTargets({width, height, count=1, texture_params, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
     let targets = {textures: [], depth: null};
     for (let i=0; i<count; i++) {
-      const texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
+      const texture = createTexture(texture_params);
       gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
       targets.textures.push(texture);
     }
@@ -207,7 +179,7 @@ function Ezgl(gl) {
     }
   }
 
-  return {createProgram, createBuffer, createTexture, loadImages, texImage2D, Attribute, drawArrays, createRenderTargets, bindRenderTargets};
+  return {createProgram, AttributeArray, bind, createBuffer, createTexture, loadImages, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering
