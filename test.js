@@ -20,19 +20,25 @@ const shadertoy = ezgl.createProgram(
 const program = ezgl.createProgram(
   vertex=`
     attribute vec2 position;
+    uniform sampler2D noise;
+    uniform float time;
+    varying vec2 mesh_pos;
 
     void main () {
-      gl_Position = vec4($perspective(position), 0, 1);
+      vec2 n = texture2D(noise, 0.1 * (position + vec2(1.1, time))).xy - 0.5;
+      gl_Position = vec4(0.3 * (position + 0.2 * sin(time) * n), 0, 1);
+      mesh_pos = position;
     }`,
   fragment=`
     uniform float time;
     uniform sampler2D rendered;
     uniform sampler2D noise;
     uniform vec2 size;
+    varying vec2 mesh_pos;
 
     void main () {
-      vec3 r = texture2D(rendered, gl_FragCoord.xy / size).rgb;
-      vec3 n = texture2D(noise, gl_FragCoord.xy / 512.0).rgb;
+      vec3 r = texture2D(rendered, 0.5 + 0.5*mesh_pos).rgb;
+      vec3 n = texture2D(noise, mesh_pos/256.0*2.0).rgb;
       gl_FragColor = vec4(0.5 * (r + sin(time * 3.14) * n), 1.0);
     }`);
 
