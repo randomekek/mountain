@@ -120,13 +120,14 @@ function Ezgl(gl) {
     return buffer;
   }
 
-  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT]}={}) {
+  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT], flipY=false}={}) {
     const texture = gl.createTexture();
     gl.bindTexture(target, texture)
     gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, mag);
     gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, min);
     gl.texParameteri(target, gl.TEXTURE_WRAP_S, wrap[0]);
     gl.texParameteri(target, gl.TEXTURE_WRAP_T, wrap[1]);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
     if (target == gl.TEXTURE_3D) {
       gl.texParameteri(target, gl.TEXTURE_WRAP_R, wrap[2]);
     }
