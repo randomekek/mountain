@@ -38,12 +38,14 @@ const program = ezgl.createProgram({
       gl_FragColor = vec4(mix(r, n, 0.5 + 0.5 * sin(time)), 1.0);
     }`});
 
-const vertexBuffer = ezgl.createBuffer(new Float32Array([
+const entire_viewport = ezgl.AttributeArray({
+  buffer: ezgl.createBuffer(new Float32Array([
     -1.0,  1.0, // TL
     -1.0, -1.0, // BL
      1.0,  1.0, // TR
      1.0, -1.0, // BR
-]));
+  ]))
+});
 
 function showTexture(texture) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -63,9 +65,37 @@ function showTexture(texture) {
           gl_FragColor = texture2D(texture, uv);
         }`
     }), {
-    position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+    position: entire_viewport,
     texture: texture,
   });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function fbm(base_noise) {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  ezgl.bind(
+    ezgl.createProgram({
+      vertex: `
+        attribute vec2 position;
+        varying vec2 uv;
+        void main() {
+          gl_Position = vec4(position, 0, 1);
+          uv = 0.5 + 0.5 * position;
+        }`,
+      fragment: `
+        uniform sampler2D base_noise;
+        varying vec2 uv;
+        void main() {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+          float scale = 0.5;
+          vec2 pos = uv;
+          for (int i=0; i<8; i++) {
+            gl_FragColor.x += scale * texture2D(base_noise, pos).x;
+            scale *= 0.5;
+            pos *= 2.01;
+          }
+        }`
+    }), { position: entire_viewport, base_noise });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
@@ -86,7 +116,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     ezgl.bindRenderTargets(renderTargets);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     ezgl.bind(shadertoy, {
-      position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+      position: entire_viewport,
       size: [50, 50],
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -95,7 +125,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     showTexture(renderTargets.textures[0], 50, 50);
     ezgl.bind(program, {
-      position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+      position: entire_viewport,
       time: [Date.now()/1000.0 % 100],
       rendered: renderTargets.textures[0],
       noise,
@@ -104,6 +134,8 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
+  fbm(noise);
+  return;
   const refresh = true ? setInterval(drawScene, 1000/60) : drawScene();
 });
 
