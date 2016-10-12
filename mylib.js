@@ -64,7 +64,7 @@ function Ezgl(gl) {
     return bindings;
   }
 
-  function createProgram(vertex, fragment) {
+  function createProgram({vertex, fragment}) {
     const key = vertex + fragment;
     if (!(key in programCache)) {
       const program = gl.createProgram();
