@@ -3,6 +3,7 @@ function Ezgl(gl) {
   const glsl_library = {};
   const attribute = Symbol('attribute'), uniform = Symbol('uniform');
   const sizes = {'float': 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
+  const programCache = {};
 
   addLibrary('perspective', `
     vec2 $name(vec2 aa) {
@@ -64,11 +65,15 @@ function Ezgl(gl) {
   }
 
   function createProgram(vertex, fragment) {
-    const program = gl.createProgram();
-    gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
-    gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
-    gl.linkProgram(program);
-    return {program, bindings: getBindings(program, vertex + fragment)};
+    const key = vertex + fragment;
+    if (!(key in programCache)) {
+      const program = gl.createProgram();
+      gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
+      gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
+      gl.linkProgram(program);
+      programCache[key] = {program, bindings: getBindings(program, vertex + fragment)};
+    }
+    return programCache[key];
   }
 
   function AttributeArray({buffer, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
@@ -155,12 +160,11 @@ function Ezgl(gl) {
     return texture;
   }
 
-  function createRenderTargets({width, height, count=1, texture_params, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
-    let targets = {textures: [], depth: null};
-    for (let i=0; i<count; i++) {
-      const texture = createTexture(texture_params);
+  function createRenderTargets({width, height, textures, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
+    let targets = {textures, depth: null};
+    for (let i=0; i<textures.length; i++) {
+      gl.bindTexture(gl.TEXTURE_2D, textures[i]);
       gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
-      targets.textures.push(texture);
     }
     if (depth_buffer) {
       targets.depth = gl.createRenderbuffer();

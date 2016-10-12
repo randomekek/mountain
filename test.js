@@ -6,14 +6,12 @@ gl.clearColor(0.6, 0.6, 0.9, 1.0);
 const shadertoy = ezgl.createProgram(
   vertex=`
     attribute vec2 position;
-
-    void main () {
+    void main() {
       gl_Position = vec4(position, 0, 1);
     }`,
   fragment=`
     uniform vec2 size;
-
-    void main () {
+    void main() {
       gl_FragColor = vec4(gl_FragCoord.xy/size, 0.7, 1.0);
     }`);
 
@@ -23,11 +21,10 @@ const program = ezgl.createProgram(
     uniform sampler2D noise;
     uniform float time;
     varying vec2 mesh_pos;
-
-    void main () {
-      vec2 n = texture2D(noise, 0.1 * (position + vec2(1.1, time))).xy - 0.5;
+    void main() {
+      mesh_pos = 0.5 + 0.5 * position;
+      vec2 n = texture2D(noise, 0.2 * mesh_pos).xy - 0.5;
       gl_Position = vec4(0.3 * (position + 0.2 * sin(time) * n), 0, 1);
-      mesh_pos = position;
     }`,
   fragment=`
     uniform float time;
@@ -35,11 +32,10 @@ const program = ezgl.createProgram(
     uniform sampler2D noise;
     uniform vec2 size;
     varying vec2 mesh_pos;
-
-    void main () {
+    void main() {
       vec3 r = texture2D(rendered, 0.5 + 0.5*mesh_pos).rgb;
-      vec3 n = texture2D(noise, mesh_pos/256.0*2.0).rgb;
-      gl_FragColor = vec4(0.5 * (r + sin(time * 3.14) * n), 1.0);
+      vec3 n = texture2D(noise, floor(mesh_pos*3.0)/256.0).rgb;
+      gl_FragColor = vec4(r, 1.0);
     }`);
 
 const vertexBuffer = ezgl.createBuffer(new Float32Array([
@@ -50,8 +46,15 @@ const vertexBuffer = ezgl.createBuffer(new Float32Array([
 ]));
 
 ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
-  const noise = ezgl.texImage2D({ texture: ezgl.createTexture(), image: noise_img });
-  const renderTargets = ezgl.createRenderTargets({ width: 50, height: 50 })
+  const mirrored = [gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT]
+  const noise = ezgl.texImage2D({
+    image: noise_img,
+    texture: ezgl.createTexture({wrap: mirrored}),
+  });
+  const renderTargets = ezgl.createRenderTargets({
+    width: 50, height: 50,
+    textures: [ezgl.createTexture({wrap: mirrored})],
+  });
 
   function drawScene() {
     ezgl.bindRenderTargets(renderTargets);
