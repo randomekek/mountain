@@ -45,15 +45,41 @@ const vertexBuffer = ezgl.createBuffer(new Float32Array([
      1.0, -1.0, // BR
 ]));
 
+function showTexture(texture) {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  ezgl.bind(
+    ezgl.createProgram({
+      vertex: `
+        attribute vec2 position;
+        varying vec2 uv;
+        void main() {
+          gl_Position = vec4(position, 0, 1);
+          uv = 0.5 + 0.5 * position;  // texture coords are normalized
+        }`,
+      fragment: `
+        uniform sampler2D texture;
+        varying vec2 uv;
+        void main() {
+          gl_FragColor = texture2D(texture, uv);
+        }`
+    }), {
+    position: ezgl.AttributeArray({ buffer: vertexBuffer }),
+    texture: texture,
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+const mirrored = [gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT];
+
+const renderTargets = ezgl.createRenderTargets({
+  width: 50, height: 50,
+  textures: [ezgl.createTexture({wrap: mirrored})],
+});
+
 ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
-  const mirrored = [gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT]
   const noise = ezgl.texImage2D({
     image: noise_img,
     texture: ezgl.createTexture({wrap: mirrored}),
-  });
-  const renderTargets = ezgl.createRenderTargets({
-    width: 50, height: 50,
-    textures: [ezgl.createTexture({wrap: mirrored})],
   });
 
   function drawScene() {
@@ -67,6 +93,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    showTexture(renderTargets.textures[0], 50, 50);
     ezgl.bind(program, {
       position: ezgl.AttributeArray({ buffer: vertexBuffer }),
       time: [Date.now()/1000.0 % 100],
