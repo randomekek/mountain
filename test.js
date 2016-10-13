@@ -48,7 +48,6 @@ const entire_viewport = ezgl.AttributeArray({
 });
 
 function showTexture(texture) {
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   ezgl.bind(
     ezgl.createProgram({
       vertex: `
@@ -72,25 +71,32 @@ function showTexture(texture) {
 }
 
 function fbm(base_noise) {
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   ezgl.bind(
     ezgl.createProgram({
       vertex: `
         attribute vec2 position;
         varying vec2 uv;
         void main() {
-          gl_Position = vec4(position, 0, 1);
+          gl_Position = vec4(position, -0.1, 1);
           uv = 0.5 + 0.5 * position;
         }`,
       fragment: `
         uniform sampler2D base_noise;
         varying vec2 uv;
+        float noise(in vec3 x) {
+          vec3 p = floor(x);
+          vec3 f = fract(x);
+          f = f*f*(3.0-2.0*f);
+          vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
+          vec2 rg = texture2D(base_noise, (uv + 0.5)/256.0).yx;
+          return -1.0+2.0*mix(rg.x, rg.y, f.z);
+        }
         void main() {
           gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
           float scale = 0.5;
-          vec2 pos = uv;
+          vec3 pos = vec3(uv, 0.0) * 2.;
           for (int i=0; i<8; i++) {
-            gl_FragColor.x += scale * texture2D(base_noise, pos).x;
+            gl_FragColor.x += scale * noise(pos);
             scale *= 0.5;
             pos *= 2.01;
           }
@@ -114,7 +120,6 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
 
   function drawScene() {
     ezgl.bindRenderTargets(renderTargets);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     ezgl.bind(shadertoy, {
       position: entire_viewport,
       size: [50, 50],
@@ -122,7 +127,6 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     showTexture(renderTargets.textures[0], 50, 50);
     ezgl.bind(program, {
       position: entire_viewport,
@@ -135,7 +139,6 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
   }
 
   fbm(noise);
-  return;
   const refresh = true ? setInterval(drawScene, 1000/60) : drawScene();
 });
 
