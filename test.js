@@ -33,7 +33,7 @@ const program = ezgl.createProgram({
     uniform vec2 size;
     varying vec2 mesh_pos;
     void main() {
-      vec3 r = texture2D(rendered, 0.5 + 0.5*mesh_pos).rgb;
+      vec3 r = texture2D(rendered, mesh_pos).rgb;
       vec3 n = texture2D(noise, floor(mesh_pos*3.0)/256.0).rgb;
       gl_FragColor = vec4(mix(r, n, 0.5 + 0.5 * sin(time)), 1.0);
     }`});
@@ -48,68 +48,73 @@ const entire_viewport = ezgl.AttributeArray({
 });
 
 function showTexture(texture) {
-  ezgl.bind(
-    ezgl.createProgram({
-      vertex: `
-        attribute vec2 position;
-        varying vec2 uv;
-        void main() {
-          gl_Position = vec4(position, 0, 1);
-          uv = 0.5 + 0.5 * position;  // texture coords are normalized
-        }`,
-      fragment: `
-        uniform sampler2D texture;
-        varying vec2 uv;
-        void main() {
-          gl_FragColor = texture2D(texture, uv);
-        }`
-    }), {
+  ezgl.bind(showTexture.program , {
+    texture,
     position: entire_viewport,
-    texture: texture,
   });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
+showTexture.program = ezgl.createProgram({
+  vertex: `
+    attribute vec2 position;
+    varying vec2 uv;
+    void main() {
+      gl_Position = vec4(position, 0, 1);
+      uv = 0.5 + 0.5 * position;  // texture coords are normalized
+    }`,
+  fragment: `
+    uniform sampler2D texture;
+    varying vec2 uv;
+    void main() {
+      gl_FragColor = texture2D(texture, uv);
+    }`
+});
+
 function fbm(base_noise) {
-  ezgl.bind(
-    ezgl.createProgram({
-      vertex: `
-        attribute vec2 position;
-        varying vec2 uv;
-        void main() {
-          gl_Position = vec4(position, -0.1, 1);
-          uv = 0.5 + 0.5 * position;
-        }`,
-      fragment: `
-        uniform sampler2D base_noise;
-        varying vec2 uv;
-        float noise(in vec3 x) {
-          vec3 p = floor(x);
-          vec3 f = fract(x);
-          f = f*f*(3.0-2.0*f);
-          vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
-          vec2 rg = texture2D(base_noise, (uv + 0.5)/256.0).yx;
-          return -1.0+2.0*mix(rg.x, rg.y, f.z);
-        }
-        void main() {
-          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-          float scale = 0.5;
-          vec3 pos = vec3(uv, 0.0) * 2.;
-          for (int i=0; i<8; i++) {
-            gl_FragColor.x += scale * noise(pos);
-            scale *= 0.5;
-            pos *= 2.01;
-          }
-        }`
-    }), { position: entire_viewport, base_noise });
+  ezgl.bind(fbm.program, {
+    base_noise,
+    position: entire_viewport,
+  });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
+
+fbm.program = ezgl.createProgram({
+  vertex: `
+    attribute vec2 position;
+    varying vec2 uv;
+    void main() {
+      gl_Position = vec4(position, -0.1, 1);
+      uv = 0.5 + 0.5 * position;
+    }`,
+  fragment: `
+    uniform sampler2D base_noise;
+    varying vec2 uv;
+    float noise(in vec3 x) {
+      vec3 p = floor(x);
+      vec3 f = fract(x);
+      f = f*f*(3.0-2.0*f);
+      vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
+      vec2 rg = texture2D(base_noise, (uv + 0.5)/256.0).yx;
+      return -1.0+2.0*mix(rg.x, rg.y, f.z);
+    }
+    void main() {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      float scale = 0.5;
+      vec3 pos = vec3(uv, 0.0) * 2.;
+      for (int i=0; i<8; i++) {
+        gl_FragColor.x += scale * noise(pos);
+        scale *= 0.5;
+        pos *= 2.01;
+      }
+    }`
+});
 
 const mirrored = [gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT];
 
 const renderTargets = ezgl.createRenderTargets({
-  width: 50, height: 50,
-  textures: [ezgl.createTexture({wrap: mirrored})],
+  width: 17, height: 17,
+  textures: [ezgl.createTexture({mag: gl.NEAREST, wrap: mirrored})],
 });
 
 ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
@@ -122,7 +127,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     ezgl.bindRenderTargets(renderTargets);
     ezgl.bind(shadertoy, {
       position: entire_viewport,
-      size: [50, 50],
+      size: [17, 17],
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 

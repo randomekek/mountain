@@ -2,7 +2,7 @@ function Ezgl(gl) {
   const offscreen = gl.createFramebuffer();
   const glsl_library = {};
   const attribute = Symbol('attribute'), uniform = Symbol('uniform');
-  const sizes = {'float': 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
+  const sizes = {float: 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
   const programCache = {};
 
   addLibrary('perspective', `
@@ -93,7 +93,7 @@ function Ezgl(gl) {
           gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
           gl.vertexAttribPointer(index, sizes[type], value.type, value.normalized, value.stride, value.offset);
         } else {
-          // TODO: gl.vertexAttrib2fv(...)
+          throw new Error('TODO: gl.vertexAttrib2fv(...)');
         }
       } else {
         if (type == 'sampler2D') {
