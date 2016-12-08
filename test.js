@@ -118,8 +118,7 @@ const renderTargets = ezgl.createRenderTargets({
 });
 
 ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
-  const noise = ezgl.texImage2D({
-    image: noise_img,
+  const noise = ezgl.texImage2D(noise_img, {
     texture: ezgl.createTexture({wrap: mirrored}),
   });
 

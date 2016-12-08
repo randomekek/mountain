@@ -125,7 +125,7 @@ function Ezgl(gl) {
     return buffer;
   }
 
-  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.REPEAT, gl.REPEAT, gl.REPEAT], flipY=false}={}) {
+  function createTexture({target=gl.TEXTURE_2D, mag=gl.LINEAR, min=gl.LINEAR, wrap=[gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT, gl.MIRRORED_REPEAT], flipY=false}={}) {
     const texture = gl.createTexture();
     gl.bindTexture(target, texture)
     gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, mag);
@@ -154,7 +154,7 @@ function Ezgl(gl) {
     }
   }
 
-  function texImage2D({texture, image, level=0, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE}) {
+  function texImage2D(image, {texture=createTexture(), level=0, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE}={}) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, image);
     return texture;
