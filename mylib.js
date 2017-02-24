@@ -1,32 +1,18 @@
 function Ezgl(gl) {
   const offscreen = gl.createFramebuffer();
-  const glsl_library = {};
   const attribute = Symbol('attribute'), uniform = Symbol('uniform');
-  const sizes = {float: 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
+  const sizes = {int: 1, float: 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
   const programCache = {};
 
-  addLibrary('perspective', `
-    vec2 $name(vec2 aa) {
-      return aa + vec2(0.1, 0.0);
-    }`);
-
-  function addLibrary(name, func) {
-    glsl_library[name] = func.replace('$name', 'import_' + name);
-  }
-
   function preprocessSource(code) {
-    let re = /\$(\w*)\(/g, imports = {};
-    code = code.replace(re, function(match, method) {
-      imports[method] = glsl_library[method];
-      return `import_${method}(`;
-    });
-    const import_list = Object.keys(imports).map(key => imports[key]);
-    return import_list.join('\n') + '\n// == Code ==\n' + code;
+    const baseIndent = /^\n?( *)/.exec(code)[1];
+    const re = new RegExp('^' + baseIndent, 'mg');
+    return '#version 300 es\nprecision highp float;\n' + code.replace(re, '');
   }
 
   function compileShader(shader_type, code) {
     const shader = gl.createShader(shader_type);
-    code = preprocessSource('precision highp float;\n' + code);
+    code = preprocessSource(code);
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -41,26 +27,28 @@ function Ezgl(gl) {
                 console.error(errors[i]);
             }
         }
-        throw "Shader compile error";
     }
     return shader;
   }
 
-  function getBindings(program, code) {
+  function getBindings(program, vertex, fragment) {
     let bindings = {}, match;
-    const re = /(attribute|uniform) (float|vec[234]|sampler[123]D) ([^;]*);/g;
-    while (match = re.exec(code)) {
-      const [, binding_type_str, type, name] = match;
-      const binding_type = {attribute, uniform}[binding_type_str];
-      const index = binding_type == attribute ? gl.getAttribLocation(program, name) : gl.getUniformLocation(program, name);
-      if (index == -1) {
-        throw `Could not locate ${binding_type_str} "${name}" in shader code`;
+    function bind(re, code) {
+      while (match = re.exec(code)) {
+        const [, binding_type_str, type, name] = match;
+        const binding_type = {'in': attribute, uniform}[binding_type_str];
+        const index = binding_type == attribute ? gl.getAttribLocation(program, name) : gl.getUniformLocation(program, name);
+        if (index == -1) {
+          throw `Could not locate ${binding_type_str} "${name}" in shader code`;
+        }
+        if (binding_type == attribute) {
+          gl.enableVertexAttribArray(index);
+        }
+        bindings[name] = {binding_type, type, index};
       }
-      if (binding_type == attribute) {
-        gl.enableVertexAttribArray(index);
-      }
-      bindings[name] = {binding_type, type, index};
     }
+    bind(/^ *(in|uniform) (bool|int|float|vec[234]|sampler[23]D) ([^;]*);/gm, vertex);
+    bind(/^ *(uniform) (bool|int|float|vec[234]|sampler[23]D) ([^;]*);/gm, fragment);
     return bindings;
   }
 
@@ -71,13 +59,16 @@ function Ezgl(gl) {
       gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
       gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
       gl.linkProgram(program);
-      programCache[key] = {program, bindings: getBindings(program, vertex + fragment)};
+      programCache[key] = {program, bindings: getBindings(program, vertex, fragment)};
     }
     return programCache[key];
   }
 
-  function AttributeArray({buffer, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
-    return {constructor: AttributeArray, buffer, type, normalized, stride, offset};
+  function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
+    if (data != null) {
+      buffer = createArrayBuffer(data);
+    }
+    return {constructor: AttributeArray, buffer, size, type, normalized, stride, offset};
   }
 
   function bind(program, bindings) {
@@ -91,37 +82,55 @@ function Ezgl(gl) {
         if (value.constructor == AttributeArray) {
           console.assert(value.buffer.constructor == WebGLBuffer);
           gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
-          gl.vertexAttribPointer(index, sizes[type], value.type, value.normalized, value.stride, value.offset);
+          if (value.type == gl.FLOAT) {
+            gl.vertexAttribPointer(index, value.size, value.type, value.normalized, value.stride, value.offset);
+          } else {
+            gl.vertexAttribIPointer(index, value.size, value.type, value.stride, value.offset);
+          }
         } else {
-          throw new Error('TODO: gl.vertexAttrib2fv(...)');
+          throw 'TODO: constant attributes';
         }
-      } else {
-        if (type == 'sampler2D') {
-          console.assert(value.constructor == WebGLTexture);
-          gl.uniform1i(index, texture);
-          gl.activeTexture(gl.TEXTURE0 + texture);
-          gl.bindTexture(gl.TEXTURE_2D, value);
-          texture++;
-        } else {
-          console.assert(value.length == sizes[type]);
-          switch (type) {
-            case 'float': gl.uniform1fv(index, value); break;
-            case 'vec2': gl.uniform2fv(index, value); break;
-            case 'vec3': gl.uniform3fv(index, value); break;
-            case 'vec4': gl.uniform4fv(index, value); break;
-            case 'mat2': gl.uniformMatrix2fv(index, value); break;
-            case 'mat3': gl.uniformMatrix3fv(index, value); break;
-            case 'mat4': gl.uniformMatrix4fv(index, value); break;
+      } else if (binding_type == uniform) {
+        // null index --> unused uniform
+        if (index != null) {
+          if (type == 'sampler2D') {
+            console.assert(value.constructor == WebGLTexture);
+            gl.uniform1i(index, texture);
+            gl.activeTexture(gl.TEXTURE0 + texture);
+            gl.bindTexture(gl.TEXTURE_2D, value);
+            texture++;
+          } else {
+            console.assert((sizes[type] == 1 && !(value instanceof Array)) || value.length == sizes[type]);
+            switch (type) {
+              case 'int': gl.uniform1i(index, value); break;
+              case 'float': gl.uniform1f(index, value); break;
+              case 'vec2': gl.uniform2fv(index, value); break;
+              case 'vec3': gl.uniform3fv(index, value); break;
+              case 'vec4': gl.uniform4fv(index, value); break;
+              case 'mat2': gl.uniformMatrix2fv(index, value); break;
+              case 'mat3': gl.uniformMatrix3fv(index, value); break;
+              case 'mat4': gl.uniformMatrix4fv(index, value); break;
+              default: throw 'unknown type';
+            }
           }
         }
+      } else {
+        throw 'unknown binding_type';
       }
     }
   }
 
-  function createBuffer(data, hint=gl.STATIC_DRAW) {
+  function createArrayBuffer(data, hint=gl.STATIC_DRAW) {
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, data, hint);
+    return buffer;
+  }
+
+  function createElementArrayBuffer(data, hint=gl.STATIC_DRAW) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, hint);
     return buffer;
   }
 
@@ -184,7 +193,7 @@ function Ezgl(gl) {
     }
   }
 
-  return {createProgram, AttributeArray, bind, createBuffer, createTexture, loadImages, texImage2D, createRenderTargets, bindRenderTargets};
+  return {createProgram, AttributeArray, bind, createArrayBuffer, createElementArrayBuffer, createTexture, loadImages, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering
@@ -209,4 +218,17 @@ function webgl_examples() {
   gl.enable(gl.CULL_FACE);
   gl.frontFace(gl.CCW);
   gl.cullFace(gl.BACK);
+
+  // by default version 300 es defines:
+  // vertex
+  //   in highp int gl_VertexID;
+  //   in highp int gl_InstanceID;
+  //   out highp vec4 gl_Position;  - output this to get clipping and culling.
+  //   out highp float gl_PointSize;  - size of point to draw
+  //
+  // fragment
+  //   in highp vec4 gl_FragCoord;  - vec4(gl_Position.xyz / gl_Position.w, gl_Position.w)
+  //   in bool gl_FrontFacing;
+  //   out highp float gl_FragDepth;
+  //   in mediump vec2 gl_PointCoord;
 }
