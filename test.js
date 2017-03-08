@@ -1,5 +1,3 @@
-(function() {
-
 const gl = document.querySelector('#canvas').getContext('webgl2'), ezgl = Ezgl(gl);
 gl.clearColor(0.6, 0.6, 0.9, 1.0);
 
@@ -150,5 +148,3 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
   fbm(noise);
   const refresh = true ? setInterval(drawScene, 1000/60) : drawScene();
 });
-
-} ());

@@ -41,14 +41,11 @@ function Ezgl(gl) {
         if (index == -1) {
           throw `Could not locate ${binding_type_str} "${name}" in shader code`;
         }
-        if (binding_type == attribute) {
-          gl.enableVertexAttribArray(index);
-        }
         bindings[name] = {binding_type, type, index};
       }
     }
-    bind(/^ *(in|uniform) (bool|int|float|vec[234]|sampler[23]D) ([^;]*);/gm, vertex);
-    bind(/^ *(uniform) (bool|int|float|vec[234]|sampler[23]D) ([^;]*);/gm, fragment);
+    bind(/^ *(in|uniform) (bool|int|float|vec[234]|sampler[23]D|mat[234]) ([^;]*);/gm, vertex);
+    bind(/^ *(uniform) (bool|int|float|vec[234]|sampler[23]D|mat[234]) ([^;]*);/gm, fragment);
     return bindings;
   }
 
@@ -71,14 +68,25 @@ function Ezgl(gl) {
     return {constructor: AttributeArray, buffer, size, type, normalized, stride, offset};
   }
 
-  function bind(program, bindings) {
-    gl.useProgram(program.program);
+  // single threaded cache.
+  var currentProgram;
+  var currentEnabledIndices = [];
+  function bind(program, bindings={}) {
+    if (program.program != currentProgram) {
+      gl.useProgram(program.program);
+      for (var i=0; i<currentEnabledIndices.length; i++) {
+        gl.disableVertexAttribArray(currentEnabledIndices[i]);
+      }
+      currentEnabledIndices = [];
+    }
 
     let texture = 0;
     for (let name in bindings) {
       const value = bindings[name];
       const {binding_type, type, index} = program.bindings[name];
       if (binding_type == attribute) {
+        gl.enableVertexAttribArray(index);
+        currentEnabledIndices.push(index);
         if (value.constructor == AttributeArray) {
           console.assert(value.buffer.constructor == WebGLBuffer);
           gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
@@ -107,9 +115,9 @@ function Ezgl(gl) {
               case 'vec2': gl.uniform2fv(index, value); break;
               case 'vec3': gl.uniform3fv(index, value); break;
               case 'vec4': gl.uniform4fv(index, value); break;
-              case 'mat2': gl.uniformMatrix2fv(index, value); break;
-              case 'mat3': gl.uniformMatrix3fv(index, value); break;
-              case 'mat4': gl.uniformMatrix4fv(index, value); break;
+              case 'mat2': gl.uniformMatrix2fv(index, false, value); break;
+              case 'mat3': gl.uniformMatrix3fv(index, false, value); break;
+              case 'mat4': gl.uniformMatrix4fv(index, false, value); break;
               default: throw 'unknown type';
             }
           }
@@ -199,6 +207,15 @@ function Ezgl(gl) {
 // TODO: 3d texture, srgb, instanced rendering
 
 function webgl_examples() {
+  // drawing
+  gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, count);  // draw verticies with attribute_array[0...count]
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices);
+  gl.drawElements(gl.TRIANGLE_STRIP, count, gl.UNSIGNED_INT, 0);  // draw verticies with attribute_array[indices[0...count]]
+  gl.drawArraysInstanced();
+  gl.drawElementsInstanced();
+  gl.drawBuffers();  // what is this?
+
   // depth
   gl.enable(gl.DEPTH_TEST);
   gl.depthMask(true);
@@ -231,4 +248,7 @@ function webgl_examples() {
   //   in bool gl_FrontFacing;
   //   out highp float gl_FragDepth;
   //   in mediump vec2 gl_PointCoord;
+  //
+  // multiple render targets via location qualifiers
+  //   out(location=2) vec3 texture;
 }
