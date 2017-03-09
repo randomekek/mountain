@@ -42,27 +42,28 @@ document.body.onmousemove = function(event) {
 const terrain = ezgl.createProgram({
   vertex: `
     uniform float gridSpacing;
-    uniform float gridCount;
+    uniform int gridCount;
+    uniform float heightScale;
     uniform sampler2D noise;
     uniform mat4 model;  // model space -> world space (move the object)
     uniform mat4 view;  // world space -> view space (move the camera)
     uniform mat4 projection;  // view space -> clip space (project into perspective)
     flat out int vid;
-    vec2 plane(float id) {
-      float x = floor(id / gridCount);
-      float z = mod(id, gridCount) + 0.5 * (mod(x, 2.0) - 1.0);
-      return vec2(2.0 / sqrt(5.0) * x, -z);
+    vec2 plane(int id) {
+      int x = id / gridCount;
+      float z = float(id % gridCount) + 0.5 * (float(x % 2) - 1.0);
+      return vec2(0.8660 * float(x), -z);
     }
     void main() {
-      vec2 xy = gridSpacing * plane(float(gl_VertexID));
-      gl_Position = projection * view * model * vec4(xy.x, 3.0*texture(noise, xy*0.12).x, xy.y, 1.0);
+      vec2 xy = gridSpacing * plane(gl_VertexID);
+      gl_Position = projection * view * model * vec4(xy.x, heightScale*texture(noise, xy*0.12).x, xy.y, 1.0);
       vid = gl_VertexID;
     }`,
   fragment: `
     out vec4 fragColor;
     flat in int vid;
     void main() {
-      fragColor = vec4(fract(float(vid)/12.0), 0.8, 0.4, 1.0);
+      fragColor = vec4(fract(float(vid)*1.212), 0.8, 0.4, 1.0);
     }`
 });
 
@@ -114,6 +115,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
       gridCount,
       gridSpacing,
       noise,
+      heightScale: 1.0,
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles);
