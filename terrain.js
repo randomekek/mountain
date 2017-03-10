@@ -30,12 +30,12 @@ function planeTriangles(n) {
 let model = mat4.create();
 let view = mat4.create();
 let projection = mat4.create();
-mat4.perspective(projection, Math.PI * 0.5, canvas.offsetWidth / canvas.offsetWidth, 1, 50)
+let axis_model = mat4.create();
 let rotX = 0
 let rotY = 0;
 
 document.body.onmousemove = function(event) {
-  rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI;
+  rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
   rotY = (event.clientY / document.body.offsetHeight - 0.5) * Math.PI;
 }
 
@@ -44,26 +44,46 @@ const terrain = ezgl.createProgram({
     uniform float gridSpacing;
     uniform int gridCount;
     uniform float heightScale;
+    uniform float time;
     uniform sampler2D noise;
     uniform mat4 model;  // model space -> world space (move the object)
     uniform mat4 view;  // world space -> view space (move the camera)
     uniform mat4 projection;  // view space -> clip space (project into perspective)
     flat out int vid;
+    out vec3 normal;
     vec2 plane(int id) {
       int x = id / gridCount;
       float z = float(id % gridCount) + 0.5 * (float(x % 2) - 1.0);
       return vec2(0.8660 * float(x), -z);
     }
+    float height(vec2 pos) {
+      // return heightScale*texture(noise, pos*0.12+vec2(time,0.0)).x;
+      return heightScale*sin(pos.x)*sin(pos.y);
+    }
+    vec3 getNormal(vec2 pos) {
+      float delta = 0.1;
+      vec2 off = vec2(delta, 0.0);
+      float x1 = height(pos - off);
+      float x2 = height(pos + off);
+      float y1 = height(pos - off.yx);
+      float y2 = height(pos + off.yx);
+      return vec3(x1 - x2, 2.0 * delta, y1 - y2);
+    }
     void main() {
-      vec2 xy = gridSpacing * plane(gl_VertexID);
-      gl_Position = projection * view * model * vec4(xy.x, heightScale*texture(noise, xy*0.12).x, xy.y, 1.0);
+      vec2 pos = gridSpacing * plane(gl_VertexID);
+      gl_Position = projection * view * model * vec4(pos.x, height(pos), pos.y, 1.0);
       vid = gl_VertexID;
+      normal = getNormal(pos);
     }`,
   fragment: `
     out vec4 fragColor;
     flat in int vid;
+    in vec3 normal;
+    uniform vec3 light;
     void main() {
-      fragColor = vec4(fract(float(vid)*1.212), 0.8, 0.4, 1.0);
+      vec3 baseColor = vec3(fract(float(vid) * 97./59.), 0.8, 0.4);
+      float shading = max(0.0, dot(normalize(light), normalize(normal)));
+      fragColor = vec4(shading*baseColor, 1.0);
     }`
 });
 
@@ -89,9 +109,11 @@ const lines = ezgl.createProgram({
 
 ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
   const noise = ezgl.texImage2D(noise_img);
-  const gridCount = 7;
-  const gridSpacing = 1;
+  const gridCount = 50;
+  const gridSpacing = 0.2;
   const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
+  mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing)
+  mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*(gridCount-1.5)*gridSpacing])
 
   const axisPoints = ezgl.AttributeArray({
     size: 3,
@@ -107,7 +129,7 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
     mat4.identity(view);
-    mat4.translate(view, view, [0, 0, -gridCount*gridSpacing - 1]);
+    mat4.translate(view, view, [0, 0, -10]);
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
@@ -116,6 +138,8 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
       gridSpacing,
       noise,
       heightScale: 1.0,
+      time: (Date.now() % 10000) / 1000000,
+      light: [1, 1, 1],
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles);
@@ -124,11 +148,11 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     ezgl.bind(lines, {
       point: axisPoints,
       color: axisPoints,
-      model, view, projection,
+      model: axis_model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, axisLines);
     gl.drawElements(gl.LINES, 6, gl.UNSIGNED_INT, 0);
   }
 
-  setInterval(render, 100);
+  setInterval(render, 1000/30);
 });
