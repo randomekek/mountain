@@ -113,9 +113,9 @@ const terrain = ezgl.createProgram({
       vec3 normal = normalize(uNormal);
       float diffuse = clamp(dot(toLight, normal), 0.0, 1.0);
       vec3 halfway = normalize(toLight - normalize(position));
-      float specular =  diffuse > 0.0 ? pow(max(0.0, dot(halfway, normal)), 11.0) : 0.0;
+      float specular =  pow(max(0.0, dot(halfway, normal)), 11.0);
       vec3 baseColor = 0.7*vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
-      fragColor = vec4((1.0*diffuse + 0.3*specular)*baseColor, 1.0);
+      fragColor = vec4(diffuse*(1.0 + 1.0*specular)*baseColor, 1.0);
     }`
 });
 
