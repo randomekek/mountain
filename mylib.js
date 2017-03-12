@@ -75,7 +75,7 @@ function Ezgl(gl) {
     if (program.program != currentProgram) {
       gl.useProgram(program.program);
       for (var i=0; i<currentEnabledIndices.length; i++) {
-        gl.disableVertexAttribArray(currentEnabledIndices[i]);
+        // gl.disableVertexAttribArray(currentEnabledIndices[i]);
       }
       currentEnabledIndices = [];
     }
@@ -85,10 +85,10 @@ function Ezgl(gl) {
       const value = bindings[name];
       const {binding_type, type, index} = program.bindings[name];
       if (binding_type == attribute) {
-        gl.enableVertexAttribArray(index);
-        currentEnabledIndices.push(index);
         if (value.constructor == AttributeArray) {
           console.assert(value.buffer.constructor == WebGLBuffer);
+          gl.enableVertexAttribArray(index);
+          currentEnabledIndices.push(index);
           gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
           if (value.type == gl.FLOAT) {
             gl.vertexAttribPointer(index, value.size, value.type, value.normalized, value.stride, value.offset);
@@ -96,7 +96,14 @@ function Ezgl(gl) {
             gl.vertexAttribIPointer(index, value.size, value.type, value.stride, value.offset);
           }
         } else {
-          throw 'TODO: constant attributes';
+          gl.disableVertexAttribArray(index);
+          switch (type) {
+            case 'float': gl.vertexAttrib1f(index, value); break;
+            case 'vec2': gl.vertexAttrib2fv(index, value); break;
+            case 'vec3': gl.vertexAttrib3fv(index, value); break;
+            case 'vec4': gl.vertexAttrib4fv(index, value); break;
+            default: throw 'unknown type';
+          }
         }
       } else if (binding_type == uniform) {
         // null index --> unused uniform

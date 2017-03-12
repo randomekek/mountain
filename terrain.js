@@ -30,13 +30,37 @@ function planeTriangles(n) {
 let model = mat4.create();
 let view = mat4.create();
 let projection = mat4.create();
-let axis_model = mat4.create();
+let axisModel = mat4.create();
 let rotX = 0
 let rotY = 0;
+let isRender = true;
+let origin = vec3.create();
+let light = vec3.create();
+let lightView = vec3.create();
+
+const gridCount = 50;
+const gridSpacing = 0.2;
+const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
+mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing)
+mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing])
+
+const axisPoints = ezgl.AttributeArray({
+  size: 3,
+  data: new Float32Array([
+    0, 0, 0,
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+  ])});
+const axisLines = ezgl.createElementArrayBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]));
 
 document.body.onmousemove = function(event) {
   rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
   rotY = (event.clientY / document.body.offsetHeight - 0.5) * Math.PI;
+}
+
+document.body.onmousedown = function(event) {
+  isRender = !isRender;
 }
 
 const terrain = ezgl.createProgram({
@@ -46,11 +70,12 @@ const terrain = ezgl.createProgram({
     uniform float heightScale;
     uniform float time;
     uniform sampler2D noise;
-    uniform mat4 model;  // model space -> world space (move the object)
-    uniform mat4 view;  // world space -> view space (move the camera)
-    uniform mat4 projection;  // view space -> clip space (project into perspective)
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
     flat out int vid;
-    out vec3 normal;
+    out vec3 uNormal;
+    out vec3 position;
     vec2 plane(int id) {
       int x = id / gridCount;
       float z = float(id % gridCount) + 0.5 * (float(x % 2) - 1.0);
@@ -71,23 +96,30 @@ const terrain = ezgl.createProgram({
     }
     void main() {
       vec2 pos = gridSpacing * plane(gl_VertexID);
-      gl_Position = projection * view * model * vec4(pos.x, height(pos), pos.y, 1.0);
+      vec4 position4 = view * model * vec4(pos.x, height(pos), pos.y, 1.0);
+      position = position4.xyz / position4.w;
+      gl_Position = projection * position4;
       vid = gl_VertexID;
-      normal = getNormal(pos);
+      uNormal = mat3(view) * getNormal(pos);
     }`,
   fragment: `
     out vec4 fragColor;
     flat in int vid;
-    in vec3 normal;
+    in vec3 uNormal;
+    in vec3 position;
     uniform vec3 light;
     void main() {
-      vec3 baseColor = vec3(fract(float(vid) * 97./59.), 0.8, 0.4);
-      float shading = max(0.0, dot(normalize(light), normalize(normal)));
-      fragColor = vec4(shading*baseColor, 1.0);
+      vec3 toLight =  normalize(light - position);
+      vec3 normal = normalize(uNormal);
+      float diffuse = clamp(dot(toLight, normal), 0.0, 1.0);
+      vec3 halfway = normalize(toLight - normalize(position));
+      float specular =  diffuse > 0.0 ? pow(max(0.0, dot(halfway, normal)), 11.0) : 0.0;
+      vec3 baseColor = 0.7*vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
+      fragColor = vec4((1.0*diffuse + 1.0*specular)*baseColor, 1.0);
     }`
 });
 
-const lines = ezgl.createProgram({
+const identity = ezgl.createProgram({
   vertex: `
     in vec3 point;
     in vec3 color;
@@ -97,6 +129,7 @@ const lines = ezgl.createProgram({
     uniform mat4 projection;
     void main() {
       gl_Position = projection * view * model * vec4(point, 1.0);
+      gl_PointSize = 11.0;
       vertColor = color + vec3(0.4);
     }`,
   fragment: `
@@ -107,25 +140,13 @@ const lines = ezgl.createProgram({
     }`
 });
 
-ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
-  const noise = ezgl.texImage2D(noise_img);
-  const gridCount = 50;
-  const gridSpacing = 0.2;
-  const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
-  mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing)
-  mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*(gridCount-1.5)*gridSpacing])
-
-  const axisPoints = ezgl.AttributeArray({
-    size: 3,
-    data: new Float32Array([
-      0, 0, 0,
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1
-    ])});
-  const axisLines = ezgl.createElementArrayBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]));
+ezgl.loadImages({ noiseImg: 'tex16.png' }, ({noiseImg}) => {
+  const noise = ezgl.texImage2D(noiseImg);
 
   function render() {
+    if(!isRender) {
+      return;
+    }
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
     mat4.identity(view);
@@ -133,25 +154,36 @@ ezgl.loadImages({ noise_img: 'tex16.png' }, ({noise_img}) => {
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
+    vec3.set(light, 2, 1, 0);
+    vec3.rotateY(light, light, origin, (2*Date.now()/1000) % (2 * Math.PI));
+    vec3.transformMat4(lightView, light, view);
+
     ezgl.bind(terrain, {
       gridCount,
       gridSpacing,
       noise,
       heightScale: 1.0,
       time: (Date.now() % 10000) / 1000000,
-      light: [1, 1, 1],
+      light: lightView,
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles);
     gl.drawElements(gl.TRIANGLE_STRIP, (2*gridCount+1)*gridCount, gl.UNSIGNED_INT, 0);
 
-    ezgl.bind(lines, {
+    ezgl.bind(identity, {
       point: axisPoints,
       color: axisPoints,
-      model: axis_model, view, projection,
+      model: axisModel, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, axisLines);
     gl.drawElements(gl.LINES, 6, gl.UNSIGNED_INT, 0);
+
+    ezgl.bind(identity, {
+      point: light,
+      color: [0.9, 0.9, 0.9],
+      model: axisModel, view, projection,
+    });
+    gl.drawArrays(gl.POINTS, 0, 1);
   }
 
   setInterval(render, 1000/30);
