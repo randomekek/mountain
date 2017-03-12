@@ -115,7 +115,7 @@ const terrain = ezgl.createProgram({
       vec3 halfway = normalize(toLight - normalize(position));
       float specular =  diffuse > 0.0 ? pow(max(0.0, dot(halfway, normal)), 11.0) : 0.0;
       vec3 baseColor = 0.7*vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
-      fragColor = vec4((1.0*diffuse + 1.0*specular)*baseColor, 1.0);
+      fragColor = vec4((1.0*diffuse + 0.3*specular)*baseColor, 1.0);
     }`
 });
 
@@ -154,7 +154,7 @@ ezgl.loadImages({ noiseImg: 'tex16.png' }, ({noiseImg}) => {
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 2, 1, 0);
+    vec3.set(light, 2, 0.6, 0);
     vec3.rotateY(light, light, origin, (2*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
