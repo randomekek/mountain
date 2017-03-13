@@ -108,14 +108,46 @@ const terrain = ezgl.createProgram({
     in vec3 uNormal;
     in vec3 position;
     uniform vec3 light;
+    const float PI = 3.1415926535897932384626433832795;
+    float pow2(float x) { return x*x; }
     void main() {
-      vec3 toLight =  normalize(light - position);
+      // direction
+      vec3 toLight = normalize(light - position);
+      vec3 toView = -normalize(position);
       vec3 normal = normalize(uNormal);
-      float diffuse = clamp(dot(toLight, normal), 0.0, 1.0);
-      vec3 halfway = normalize(toLight - normalize(position));
-      float specular =  pow(max(0.0, dot(halfway, normal)), 11.0);
+      vec3 halfVec = normalize(toLight + toView);
+
+      // angle
+      float dotLH = max(dot(halfVec, toLight), 0.0);
+      float dotNL = max(dot(normal, toLight), 0.0);
+      float dotNV = abs(dot(normal, toView)) + 1e-6;
+      float dotNH = max(dot(normal, halfVec), 0.0);
+
+      // phong: diffuse = dotNL; specular = pow(dotNH, 11.0);
+
+      // pbr
+      // friendly description - https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf
+      // lots of code - http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr_v2.pdf
+      // comparison - http://graphicrants.blogspot.com.au/2013/08/specular-brdf-reference.html
       vec3 baseColor = 0.7*vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
-      fragColor = vec4(diffuse*(1.0 + 1.0*specular)*baseColor, 1.0);
+      float roughness = 1.0;
+      float metalness = 0.0;
+      float specular = 1.0;
+
+      float a2 = pow2(pow2(roughness));
+      vec3 diffuseColor = mix(baseColor, vec3(0.0), metalness);
+      vec3 specularColor = specular * mix(vec3(1.0), baseColor, metalness);
+
+      // d = chance microfacet faces the half vector. model: GGX(trowbridge-reitz)
+      float d = a2 / pow2(1.0 + (a2 - 1.0) * dotNH) / PI;
+      // f = intrinsic reflectivity of microfacet. model: schlick
+      vec3 f = specularColor + (1.0-specularColor)*exp2((-5.55473*dotLH - 6.98316)*dotLH);
+      // g = fraction of microfacets visible (due to self shadowing). model: ggx
+      float ggxV = dotNL * sqrt(pow2(dotNV)*(1.0 - a2) + a2);
+      float ggxL = dotNV * sqrt(pow2(dotNL)*(1.0 - a2) + a2);
+      float g = 0.5 / max(ggxV + ggxL, 1e-6);
+
+      fragColor = vec4(baseColor*dotNL*(1.0*diffuseColor + 1.0*d*f*g), 1.0);
     }`
 });
 
