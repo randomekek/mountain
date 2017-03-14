@@ -163,18 +163,27 @@ function Ezgl(gl) {
     return texture;
   }
 
-  function loadImages(urls, callback) {
-    let images = {}, total = Object.keys(urls).length, count = 0;
+  function load(urls, callback) {
+    let values = {}, total = Object.keys(urls).length + 1;
+    function done() {
+      if(--total==0) {
+        callback(values);
+      }
+    }
+    done();
     for (let key in urls) {
-      const img = new Image();
-      images[key] = img;
-      img.onload = function() {
-        count++;
-        if(count == total) {
-          callback(images);
-        }
-      };
-      img.src = urls[key];
+      const url = urls[key];
+      if (['png', 'jpg'].indexOf(url.substr(-3)) != -1) {
+        const img = new Image();
+        img.onload = done;
+        values[key] = img;
+        img.src = url;
+      } else {
+        fetch(new Request(url), {cache: 'no-cache'}).then(x => x.text()).then(text => {
+          values[key] = text;
+          done();
+        });
+      }
     }
   }
 
@@ -208,7 +217,7 @@ function Ezgl(gl) {
     }
   }
 
-  return {createProgram, AttributeArray, bind, createArrayBuffer, createElementArrayBuffer, createTexture, loadImages, texImage2D, createRenderTargets, bindRenderTargets};
+  return {createProgram, AttributeArray, bind, createArrayBuffer, createElementArrayBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering
