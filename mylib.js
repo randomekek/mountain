@@ -2,7 +2,6 @@ function Ezgl(gl) {
   const offscreen = gl.createFramebuffer();
   const attribute = Symbol('attribute'), uniform = Symbol('uniform');
   const sizes = {int: 1, float: 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
-  const programCache = {};
 
   function preprocessSource(code) {
     const baseIndent = /^\n?( *)/.exec(code)[1];
@@ -50,15 +49,11 @@ function Ezgl(gl) {
   }
 
   function createProgram({vertex, fragment}) {
-    const key = vertex + fragment;
-    if (!(key in programCache)) {
-      const program = gl.createProgram();
-      gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
-      gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
-      gl.linkProgram(program);
-      programCache[key] = {program, bindings: getBindings(program, vertex, fragment)};
-    }
-    return programCache[key];
+    const program = gl.createProgram();
+    gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
+    gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
+    gl.linkProgram(program);
+    return {program, bindings: getBindings(program, vertex, fragment)};
   }
 
   function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
@@ -164,15 +159,15 @@ function Ezgl(gl) {
   }
 
   function load(urls, callback) {
-    let values = {}, total = Object.keys(urls).length + 1;
+    let values = {}, total = urls.length + 1;
     function done() {
       if(--total==0) {
         callback(values);
       }
     }
     done();
-    for (let key in urls) {
-      const url = urls[key];
+    urls.forEach(url => {
+      const key = url.replace(/\W/g, '_');
       if (['png', 'jpg'].indexOf(url.substr(-3)) != -1) {
         const img = new Image();
         img.onload = done;
@@ -184,7 +179,7 @@ function Ezgl(gl) {
           done();
         });
       }
-    }
+    });
   }
 
   function texImage2D(image, {texture=createTexture(), level=0, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE}={}) {
