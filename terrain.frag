@@ -1,10 +1,13 @@
-out vec4 fragColor;
-flat in int vid;
-in vec3 uNormal;
-in vec3 position;
 uniform vec3 light;
 const float PI = 3.1415926535897932384626433832795;
 float pow2(float x) { return x*x; }
+
+flat in int vid;
+in vec3 uNormal;
+in vec3 position;
+
+out vec4 fragColor;
+
 void main() {
   // direction
   vec3 toLight = normalize(light - position);
@@ -23,6 +26,7 @@ void main() {
   // pbr
   // friendly description - https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf
   // lots of code - http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr_v2.pdf
+  // lots of code - http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
   // comparison - http://graphicrants.blogspot.com.au/2013/08/specular-brdf-reference.html
   vec3 color = vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
   vec3 edgeTint = vec3(1.0);
@@ -31,7 +35,7 @@ void main() {
   float roughness = 1.0;
 
   vec3 diffuseColor = mix(color, vec3(0.018), metalness);  // diffuse color (dialetric = color, metal = 0-0.02)
-  vec3 f0 = mix(vec3(0.18), color, metalness);  // (head on) specular color (diaelectric = 0.15-0.2, metal = color)
+  vec3 f0 = mix(vec3(0.04), color, metalness);  // (head on) specular color (diaelectric = 0-0.2, metal = color)
   vec3 f90 = mix(vec3(1.0), edgeTint, metalness); // glancing specular color (dialetric = 1, metal = edgeTint silver gold or white)
 
   float a2 = pow2(pow2(roughness));

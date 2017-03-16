@@ -48,7 +48,7 @@ function Ezgl(gl) {
     return bindings;
   }
 
-  function createProgram({vertex, fragment}) {
+  function createProgram(vertex, fragment) {
     const program = gl.createProgram();
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
@@ -228,8 +228,8 @@ function webgl_examples() {
   gl.drawBuffers();  // what is this?
 
   // depth
-  gl.enable(gl.DEPTH_TEST);
-  gl.depthMask(true);
+  gl.depthMask(true);  // writing to depth
+  gl.enable(gl.DEPTH_TEST);  // testing depth
   gl.depthFunc(gl.LESS);
   gl.depthRange(0.0, 1.0);
 
