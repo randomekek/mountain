@@ -45,8 +45,8 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 50;
-const gridSpacing = 0.2;
+const gridCount = 500;
+const gridSpacing = 0.1;
 const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
 mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing);
 mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
@@ -80,6 +80,22 @@ document.body.onmousedown = function(event) {
   isRender = !isRender;
 }
 
+function generateHeightMap(fbm, noise) {
+  const renderTargets = ezgl.createRenderTargets({
+    width: 512,
+    height: 512,
+    textures: [ezgl.createTexture()],
+  });
+  ezgl.bindRenderTargets(renderTargets);
+  ezgl.bind(fbm, {
+    points: viewport,
+    noise,
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return renderTargets.textures[0];
+}
+
 const identity = ezgl.createProgram(
   /*vertex*/`
   in vec3 point;
@@ -101,10 +117,13 @@ const identity = ezgl.createProgram(
     fragColor = vec4(vertColor, 1.0);
   }`);
 
-ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'sky.vert', 'sky.frag'], r => {
+ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
-  const sky = ezgl.createProgram(r.sky_vert, r.sky_frag);
+  const sky = ezgl.createProgram(r.screen_vert, r.sky_frag);
+  const fbm = ezgl.createProgram(r.screen_vert, r.fbm_frag);
+  const heightMap = generateHeightMap(fbm, noise);
+  setInterval(render, 1000/30);
 
   function render() {
     if(!isRender) {
@@ -117,8 +136,8 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'sky.vert', 'sky.frag'],
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 2, 0.6, 0);
-    vec3.rotateY(light, light, origin, (2*Date.now()/1000) % (2 * Math.PI));
+    vec3.set(light, 6, 3, 0);
+    vec3.rotateY(light, light, origin, (0.6*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
     gl.depthMask(false);
@@ -133,8 +152,8 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'sky.vert', 'sky.frag'],
     ezgl.bind(terrain, {
       gridCount,
       gridSpacing,
-      noise,
-      heightScale: 1.0,
+      heightMap,
+      heightScale: 3.0,
       time: (Date.now() % 10000) / 1000000,
       light: lightView,
       model, view, projection,
@@ -157,6 +176,4 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'sky.vert', 'sky.frag'],
     });
     gl.drawArrays(gl.POINTS, 0, 1);
   }
-
-  setInterval(render, 1000/30);
 });

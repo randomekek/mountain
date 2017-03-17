@@ -2,7 +2,7 @@ uniform float gridSpacing;
 uniform int gridCount;
 uniform float heightScale;
 uniform float time;
-uniform sampler2D noise;
+uniform sampler2D heightMap;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -17,7 +17,7 @@ vec2 plane(int id) {
   return vec2(0.8660 * float(x), -z);
 }
 float height(vec2 pos) {
-  return heightScale*texture(noise, pos*0.004).x;
+  return heightScale*texture(heightMap, pos*0.02).x;
   //return heightScale*sin(pos.x)*sin(pos.y);
 }
 vec3 getNormal(vec2 pos) {
