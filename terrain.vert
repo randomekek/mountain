@@ -17,8 +17,8 @@ vec2 plane(int id) {
   return vec2(0.8660 * float(x), -z);
 }
 float height(vec2 pos) {
-  // return heightScale*texture(noise, pos*0.12+vec2(time,0.0)).x;
-  return heightScale*sin(pos.x)*sin(pos.y);
+  return heightScale*texture(noise, pos*0.004).x;
+  //return heightScale*sin(pos.x)*sin(pos.y);
 }
 vec3 getNormal(vec2 pos) {
   float delta = 0.1;

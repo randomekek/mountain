@@ -37,7 +37,6 @@ function planeTriangles(n) {
 let model = mat4.create();
 let view = mat4.create();
 let projection = mat4.create();
-let invProjection = mat4.create();
 let axisModel = mat4.create();
 let rotX = 0
 let rotY = 0;
@@ -51,7 +50,6 @@ const gridSpacing = 0.2;
 const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
 mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing);
 mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
-mat4.invert(invProjection, projection);
 
 const viewport = ezgl.AttributeArray({
   size: 2,
@@ -127,7 +125,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'sky.vert', 'sky.frag'],
     ezgl.bind(sky, {
       points: viewport,
       sun: [1, 1, -1],
-      view, invProjection
+      view, projection
     });
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.depthMask(true);
