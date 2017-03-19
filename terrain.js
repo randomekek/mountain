@@ -45,10 +45,11 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 500;
-const gridSpacing = 0.1;
-const triangles = ezgl.createElementArrayBuffer(planeTriangles(gridCount));
-mat4.perspective(projection, Math.PI * 0.3, canvas.offsetWidth / canvas.offsetHeight, 1, 2*gridCount*gridSpacing);
+const gridCount = 150;
+const gridSpacing = 0.2;
+const offset = 10;
+const triangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
+mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
 mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
 
 const viewport = ezgl.AttributeArray({
@@ -69,7 +70,7 @@ const axisPoints = ezgl.AttributeArray({
     0, 1, 0,
     0, 0, 1
   ])});
-const axisLines = ezgl.createElementArrayBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]));
+const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
 
 document.body.onmousemove = function(event) {
   rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
@@ -117,12 +118,13 @@ const identity = ezgl.createProgram(
     fragColor = vec4(vertColor, 1.0);
   }`);
 
-ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag'], r => {
+ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
   const sky = ezgl.createProgram(r.screen_vert, r.sky_frag);
   const fbm = ezgl.createProgram(r.screen_vert, r.fbm_frag);
   const heightMap = generateHeightMap(fbm, noise);
+
   setInterval(render, 1000/30);
 
   function render() {
@@ -132,7 +134,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
     mat4.identity(view);
-    mat4.translate(view, view, [0, 0, -10]);
+    mat4.translate(view, view, [0, 0, -offset]);
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
@@ -154,7 +156,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       gridSpacing,
       heightMap,
       heightScale: 3.0,
-      time: (Date.now() % 10000) / 1000000,
+      time: (Date.now() % 1000000) / 100000,
       light: lightView,
       model, view, projection,
     });

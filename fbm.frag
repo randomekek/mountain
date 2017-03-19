@@ -17,7 +17,7 @@ void main() {
   fragColor = vec4(0.0, 0.0, 0.0, 1.0);
   float scale = 0.25;
   vec3 pos = vec3(pos + 1.0, 0.0) * 10.0;
-  for (int i=0; i<8; i++) {
+  for (int i=0; i<6; i++) {
     fragColor.xyz += scale * sampleNoise(pos);
     scale *= 0.5;
     pos *= 2.01;

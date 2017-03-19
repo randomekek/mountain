@@ -21,7 +21,7 @@ float height(vec2 pos) {
   //return heightScale*sin(pos.x)*sin(pos.y);
 }
 vec3 getNormal(vec2 pos) {
-  float delta = 0.1;
+  float delta = 0.4;
   vec2 off = vec2(delta, 0.0);
   float x1 = height(pos - off);
   float x2 = height(pos + off);

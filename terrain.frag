@@ -28,7 +28,7 @@ void main() {
   // lots of code - http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr_v2.pdf
   // lots of code - http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
   // comparison - http://graphicrants.blogspot.com.au/2013/08/specular-brdf-reference.html
-  vec3 color = vec3(fract(float(vid) * 97./463.), 0.8, 0.4);
+  vec3 color = vec3(0.5, 0.8, 0.4);  // use fract(float(vid) * 97./463.) for individual triangles
   vec3 edgeTint = vec3(1.0);
   vec3 lightColor = vec3(1.0);
   float metalness = 0.0;

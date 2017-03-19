@@ -58,7 +58,7 @@ function Ezgl(gl) {
 
   function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
     if (data != null) {
-      buffer = createArrayBuffer(data);
+      buffer = createBuffer(data);
     }
     return {constructor: AttributeArray, buffer, size, type, normalized, stride, offset};
   }
@@ -130,17 +130,10 @@ function Ezgl(gl) {
     }
   }
 
-  function createArrayBuffer(data, hint=gl.STATIC_DRAW) {
+  function createBuffer(data, {type=gl.ARRAY_BUFFER, hint=gl.STATIC_DRAW}={}) {
     const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, data, hint);
-    return buffer;
-  }
-
-  function createElementArrayBuffer(data, hint=gl.STATIC_DRAW) {
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, hint);
+    gl.bindBuffer(type, buffer);
+    gl.bufferData(type, data, hint);
     return buffer;
   }
 
@@ -212,7 +205,7 @@ function Ezgl(gl) {
     }
   }
 
-  return {createProgram, AttributeArray, bind, createArrayBuffer, createElementArrayBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
+  return {createProgram, AttributeArray, bind, createBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering
@@ -246,6 +239,34 @@ function webgl_examples() {
   gl.enable(gl.CULL_FACE);
   gl.frontFace(gl.CCW);
   gl.cullFace(gl.BACK);
+
+  // transform feedback
+  gl.transformFeedbackVaryings(prog, ['out_parameter'], gl.SEPARATE_ATTRIBS);  // before linking program
+  const out_vals = ezgl.createBuffer(size, {type:gl.TRANSFORM_FEEDBACK_BUFFER, hint: gl.DYNAMIC_COPY});
+  gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, out_vals);
+  gl.beginTransformFeedback(gl.POINTS);
+  gl.drawArrays(gl.POINTS, 0, n);
+  gl.endTransformFeedback();
+  gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
+
+  // reduce bindBuffer and vertexAttribPointer calls by saving them
+  const v = gl.createVertexArray();
+  gl.bindVertexArray(v);  // this restores and records the calls
+  gl.drawArrays();
+  gl.bindVertexArray(null);
+
+  // set index of attributes (so you don't need to fetch them)
+  // you would do this to reuse vertexArray objects
+  gl.bindAttribLocation(program, 0, 'in_parameter');
+
+  // reduce uniform calls by grouping them
+  const shader = `uniform MyBlock {
+    vec3 some_vec;
+    mat4 projection;
+  }`;
+  const idx = gl.getUniformBlockIndex(program, 'MyBlock');
+  const bindings = 'no idea';
+  gl.uniformBlockBinding(program, idx, bindings);
 
   // by default version 300 es defines:
   // vertex
