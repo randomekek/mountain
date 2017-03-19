@@ -18,28 +18,11 @@ gl.depthMask(true);
 gl.depthFunc(gl.LESS);
 gl.depthRange(0.0, 1.0);
 
-function planeTriangles(n) {
-  var triangles = new Uint32Array((2*n+1)*n);
-  let j = 0, a = 0, incr = 1;
-  for (let row=0; row<n; row++) {
-    for (let col=0; col<n; col++) {
-      triangles[j++] = a;
-      triangles[j++] = a + n;
-      a += incr;
-    }
-    a += n - incr;
-    triangles[j++] = a;
-    incr = -incr;
-  }
-  return triangles;
-}
-
 let model = mat4.create();
 let view = mat4.create();
 let projection = mat4.create();
 let axisModel = mat4.create();
-let rotX = 0
-let rotY = 0;
+let rotX = 0, rotY = 0;
 let isRender = true;
 let origin = vec3.create();
 let light = vec3.create();
@@ -48,81 +31,29 @@ let lightView = vec3.create();
 const gridCount = 150;
 const gridSpacing = 0.2;
 const offset = 10;
-const triangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
+const grassSegments = 6;
+
+const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
+const grassTriangles = ezgl.createBuffer(lineTriangles(grassSegments), {type: gl.ELEMENT_ARRAY_BUFFER});
+const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
+const viewport = ezgl.AttributeArray({
+  size: 2,
+  data: new Float32Array([ -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0 ])
+});
+const axisPoints = ezgl.AttributeArray({
+  size: 3,
+  data: new Float32Array([ 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 ])
+});
+
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
 mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
 
-const viewport = ezgl.AttributeArray({
-  size: 2,
-  data: new Float32Array([
-    -1.0,  1.0, // TL
-    -1.0, -1.0, // BL
-     1.0,  1.0, // TR
-     1.0, -1.0, // BR
-  ])
-});
-
-const axisPoints = ezgl.AttributeArray({
-  size: 3,
-  data: new Float32Array([
-    0, 0, 0,
-    1, 0, 0,
-    0, 1, 0,
-    0, 0, 1
-  ])});
-const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
-
-document.body.onmousemove = function(event) {
-  rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
-  rotY = (event.clientY / document.body.offsetHeight - 0.5) * Math.PI;
-}
-
-document.body.onmousedown = function(event) {
-  isRender = !isRender;
-}
-
-function generateHeightMap(fbm, noise) {
-  const renderTargets = ezgl.createRenderTargets({
-    width: 512,
-    height: 512,
-    textures: [ezgl.createTexture()],
-  });
-  ezgl.bindRenderTargets(renderTargets);
-  ezgl.bind(fbm, {
-    points: viewport,
-    noise,
-  });
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  return renderTargets.textures[0];
-}
-
-const identity = ezgl.createProgram(
-  /*vertex*/`
-  in vec3 point;
-  in vec3 color;
-  flat out vec3 vertColor;
-  uniform mat4 model;
-  uniform mat4 view;
-  uniform mat4 projection;
-  void main() {
-    gl_Position = projection * view * model * vec4(point, 1.0);
-    gl_PointSize = 11.0;
-    vertColor = color + vec3(0.4);
-  }`,
-
-  /*fragment*/`
-  flat in vec3 vertColor;
-  out vec4 fragColor;
-  void main() {
-    fragColor = vec4(vertColor, 1.0);
-  }`);
-
-ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag'], r => {
+ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
   const sky = ezgl.createProgram(r.screen_vert, r.sky_frag);
   const fbm = ezgl.createProgram(r.screen_vert, r.fbm_frag);
+  const identity = ezgl.createProgram(r.axis_vert, r.axis_frag);
   const heightMap = generateHeightMap(fbm, noise);
 
   setInterval(render, 1000/30);
@@ -160,7 +91,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       light: lightView,
       model, view, projection,
     });
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangles);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, landTriangles);
     gl.drawElements(gl.TRIANGLE_STRIP, (2*gridCount+1)*gridCount, gl.UNSIGNED_INT, 0);
 
     ezgl.bind(identity, {
@@ -179,3 +110,52 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     gl.drawArrays(gl.POINTS, 0, 1);
   }
 });
+
+function planeTriangles(n) {
+  var triangles = new Uint32Array((2*n+1)*n);
+  let j = 0, a = 0, incr = 1;
+  for (let row=0; row<n; row++) {
+    for (let col=0; col<n; col++) {
+      triangles[j++] = a;
+      triangles[j++] = a + n;
+      a += incr;
+    }
+    a += n - incr;
+    triangles[j++] = a;
+    incr = -incr;
+  }
+  return triangles;
+}
+
+function lineTriangles(n) {
+  var triangles = new Uint32Array(2*n+2);
+  for (let row=0; row<2*n+2; row++) {
+    triangles[row] = row;
+  }
+  return triangles;
+}
+
+function generateHeightMap(program, noise) {
+  const renderTargets = ezgl.createRenderTargets({
+    width: 512,
+    height: 512,
+    textures: [ezgl.createTexture()],
+  });
+  ezgl.bindRenderTargets(renderTargets);
+  ezgl.bind(program, {
+    points: viewport,
+    noise,
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return renderTargets.textures[0];
+}
+
+document.body.onmousemove = function(event) {
+  rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
+  rotY = (event.clientY / document.body.offsetHeight - 0.5) * Math.PI;
+}
+
+document.body.onmousedown = function(event) {
+  isRender = !isRender;
+}
