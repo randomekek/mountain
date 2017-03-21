@@ -30,11 +30,11 @@ let lightView = vec3.create();
 
 const gridCount = 60;
 const gridSpacing = 0.2;
-const offset = 10;
+const offset = 5;
 const heightScale = 3.0;
 const grassSegments = 6;
-const grassInstanceSide = 100;
-const grassSize = [0.02, 0.6 / grassSegments];
+const grassInstanceSide = 50;
+const grassSize = [0.1, 0.6 / grassSegments];
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
@@ -75,7 +75,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 6, 3, 0);
+    vec3.set(light, 3, 3, 0);
     vec3.rotateY(light, light, origin, (0.6*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
