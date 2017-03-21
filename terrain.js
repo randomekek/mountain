@@ -28,13 +28,18 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 150;
+const gridCount = 60;
 const gridSpacing = 0.2;
 const offset = 10;
+const heightScale = 3.0;
 const grassSegments = 6;
+const grassInstanceSide = 100;
+const grassSize = [0.02, 0.6 / grassSegments];
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
+const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
 const grassTriangles = ezgl.createBuffer(lineTriangles(grassSegments), {type: gl.ELEMENT_ARRAY_BUFFER});
+const grassVertex = ezgl.AttributeArray({ size: 2, divisor: 0, data: new Float32Array([ 0, 0, 1, 0, 0, 1, 1, 1, 0, 2, 1, 2, 0, 3, 1, 3, 0, 4, 1, 4, 0, 5, 1, 5, 0, 6, 1, 6]) });
 const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
 const viewport = ezgl.AttributeArray({
   size: 2,
@@ -53,6 +58,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
   const sky = ezgl.createProgram(r.screen_vert, r.sky_frag);
   const fbm = ezgl.createProgram(r.screen_vert, r.fbm_frag);
+  const grass = ezgl.createProgram(r.grass_vert, r.grass_frag);
   const identity = ezgl.createProgram(r.axis_vert, r.axis_frag);
   const heightMap = generateHeightMap(fbm, noise);
 
@@ -82,11 +88,25 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.depthMask(true);
 
+    gl.disable(gl.CULL_FACE);
+    ezgl.bind(grass, {
+      grassVertex,
+      spacingPerGrass: gridCount * gridSpacing / grassInstanceSide,
+      grassInstanceSide,
+      grassSize,
+      heightMap, heightScale,
+      light: lightView,
+      model, view, projection,
+    });
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, grassTriangles);
+    gl.drawElementsInstanced(gl.TRIANGLE_STRIP, grassSegments*2+2, gl.UNSIGNED_SHORT, 0, grassInstanceSide * grassInstanceSide);
+    gl.enable(gl.CULL_FACE);
+
     ezgl.bind(terrain, {
+      landDummyAttribute,
       gridCount,
       gridSpacing,
-      heightMap,
-      heightScale: 3.0,
+      heightMap, heightScale,
       time: (Date.now() % 1000000) / 100000,
       light: lightView,
       model, view, projection,
@@ -128,7 +148,7 @@ function planeTriangles(n) {
 }
 
 function lineTriangles(n) {
-  var triangles = new Uint32Array(2*n+2);
+  var triangles = new Uint16Array(2*n+2);
   for (let row=0; row<2*n+2; row++) {
     triangles[row] = row;
   }

@@ -7,6 +7,8 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+in float landDummyAttribute;
+
 flat out int vid;
 out vec3 uNormal;
 out vec3 position;
@@ -33,7 +35,7 @@ void main() {
   vec2 pos = gridSpacing * plane(gl_VertexID);
   vec4 position4 = view * model * vec4(pos.x, height(pos), pos.y, 1.0);
   position = position4.xyz / position4.w;
-  gl_Position = projection * position4;
+  gl_Position = projection * position4 + landDummyAttribute;
   vid = gl_VertexID;
   uNormal = mat3(view) * getNormal(pos);
 }

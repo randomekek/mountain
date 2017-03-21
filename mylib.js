@@ -43,7 +43,7 @@ function Ezgl(gl) {
         bindings[name] = {binding_type, type, index};
       }
     }
-    bind(/^ *(in|uniform) (bool|int|float|vec[234]|sampler[23]D|mat[234]) ([^;]*);/gm, vertex);
+    bind(/^(?:layout.*)? *(in|uniform) (bool|int|float|vec[234]|sampler[23]D|mat[234]) ([^;]*);/gm, vertex);
     bind(/^ *(uniform) (bool|int|float|vec[234]|sampler[23]D|mat[234]) ([^;]*);/gm, fragment);
     return bindings;
   }
@@ -56,11 +56,11 @@ function Ezgl(gl) {
     return {program, bindings: getBindings(program, vertex, fragment)};
   }
 
-  function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0}) {
+  function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0, divisor=null}) {
     if (data != null) {
       buffer = createBuffer(data);
     }
-    return {constructor: AttributeArray, buffer, size, type, normalized, stride, offset};
+    return {constructor: AttributeArray, buffer, size, type, normalized, stride, offset, divisor};
   }
 
   // single threaded cache.
@@ -89,6 +89,9 @@ function Ezgl(gl) {
             gl.vertexAttribPointer(index, value.size, value.type, value.normalized, value.stride, value.offset);
           } else {
             gl.vertexAttribIPointer(index, value.size, value.type, value.stride, value.offset);
+          }
+          if (value.divisor != null) {
+            gl.vertexAttribDivisor(index, value.divisor);
           }
         } else {
           gl.disableVertexAttribArray(index);
