@@ -28,18 +28,19 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 60;
+const gridCount = 30;
 const gridSpacing = 0.2;
-const offset = 5;
+const offset = 6;
 const heightScale = 3.0;
 const grassSegments = 6;
 const grassInstanceSide = 50;
-const grassSize = [0.1, 0.6 / grassSegments];
+const grassSize = [0.01, 0.8 / grassSegments];
+const grassRotate = 0.9/grassSegments;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
 const grassTriangles = ezgl.createBuffer(lineTriangles(grassSegments), {type: gl.ELEMENT_ARRAY_BUFFER});
-const grassVertex = ezgl.AttributeArray({ size: 2, divisor: 0, data: new Float32Array([ 0, 0, 1, 0, 0, 1, 1, 1, 0, 2, 1, 2, 0, 3, 1, 3, 0, 4, 1, 4, 0, 5, 1, 5, 0, 6, 1, 6]) });
+const grassVertex = ezgl.AttributeArray({ size: 2, divisor: 0, data: new Float32Array([ -1, 0, 1, 0, -1, 1, 1, 1, -1, 2, 1, 2, -1, 3, 1, 3, -1, 4, 1, 4, -1, 5, 1, 5, -1, 6, 1, 6]) });
 const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
 const viewport = ezgl.AttributeArray({
   size: 2,
@@ -92,6 +93,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     ezgl.bind(grass, {
       grassVertex,
       spacingPerGrass: gridCount * gridSpacing / grassInstanceSide,
+      grassRotate: grassRotate * Math.sin(Date.now() % 100000 / 1000),
       grassInstanceSide,
       grassSize,
       heightMap, heightScale,

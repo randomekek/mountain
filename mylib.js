@@ -15,17 +15,20 @@ function Ezgl(gl) {
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        let errors = gl.getShaderInfoLog(shader).split('\n');
-        for(let i=0; i<errors.length - 1; i++) {
-            let match = /ERROR: [^:]*:(\d+): (.*)$/.exec(errors[i]);
-            if(match) {
-                let index = parseInt(match[1]);
-                let lines = code.split(/\n|\r/g);
-                console.error(match[2], '\n ', lines.slice(index-3, index-1).join('\n  ') + '\n> ' + lines.slice(index-1, index+2).join('\n  '));
-            } else {
-                console.error(errors[i]);
-            }
+      let errors = gl.getShaderInfoLog(shader).split('\n');
+      for(let i=0; i<errors.length - 1; i++) {
+        let match = /ERROR: [^:]*:(\d+): (.*)$/.exec(errors[i]);
+        if(match) {
+          let index = parseInt(match[1]);
+          let lines = code.split(/\n|\r/g);
+          console.error(match[2], '\n ', lines.slice(index-3, index-1).join('\n  ') + '\n> ' + lines.slice(index-1, index+2).join('\n  '));
+        } else {
+          console.error(errors[i]);
         }
+      }
+      if (errors.length > 0) {
+        throw 'shader compile error';
+      }
     }
     return shader;
   }
@@ -53,6 +56,11 @@ function Ezgl(gl) {
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
     gl.linkProgram(program);
+    const errors = gl.getProgramInfoLog(program);
+    if (errors.length > 0) {
+      console.error(errors);
+      throw 'shader link error';
+    }
     return {program, bindings: getBindings(program, vertex, fragment)};
   }
 
