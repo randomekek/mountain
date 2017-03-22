@@ -28,8 +28,8 @@ vec3 vertex(int id, int instance) {
   vec2 gridPos = vec2(float(instance / grassInstanceSide), -float(instance % grassInstanceSide));
   vec2 randPos = vec2(rand1(finst), rand2(finst));
   vec2 pos = spacingPerGrass * (gridPos + randPos);
-  float deg = vertex.y * grassRotate * rand1(finst) * 4.;
-  vec3 up = (height(pos) + vertex.y) * vec3(sin(deg), cos(deg), 0);
+  float deg = vertex.y * grassRotate * rand1(finst);
+  vec3 up = vertex.y * vec3(sin(deg), cos(deg), 0) + vec3(0, height(pos), 0);
 
   vec3 base = vec3(pos.x, 0, pos.y) + up;
   vec3 baseWorld = mat3(model) * base + model[3].xyz + view[3].xyz * mat3(view);

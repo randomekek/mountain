@@ -33,9 +33,9 @@ const gridSpacing = 0.2;
 const offset = 6;
 const heightScale = 3.0;
 const grassSegments = 6;
-const grassInstanceSide = 50;
+const grassInstanceSide = 60;
 const grassSize = [0.01, 0.8 / grassSegments];
-const grassRotate = 0.9/grassSegments;
+const grassRotate = 2*Math.PI/(grassSegments - 1);
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
