@@ -3,6 +3,7 @@ uniform vec3 light;
 flat in int vid;
 flat in float grassId;
 in vec3 position;
+in float grassHeight;
 
 const float PI = 3.1415926535897932384626433832795;
 float pow2(float x) { return x*x; }
@@ -13,5 +14,5 @@ out vec4 fragColor;
 
 void main() {
   fragColor = vec4(fract(float(vid) * 97./463.), 0.3, 0.8, 1.0);
-  fragColor = vec4(0.3, 0.5, 0.2, 1.0) + 0.1 * vec4(rand1(grassId), rand2(grassId), rand1(grassId+0.25), 0);
+  fragColor = vec4(0.3, 0.5, 0.2, 1.0) + 0.2 * vec4(0, rand2(grassId), 0, 0) + vec4(vec3(mix(-0.4, 0.0, grassHeight/6.0)), 1.0);
 }

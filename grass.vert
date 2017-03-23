@@ -13,6 +13,7 @@ in vec2 grassVertex;
 flat out int vid;
 flat out float grassId;
 out vec3 position;
+out float grassHeight;
 
 float rand1(float x) { return fract(sin(x * 12.9898 + 1.0) * 43758.5453); }
 float rand2(float x) { return fract(sin(x * 78.233 + 1.0) * 43758.5453); }
@@ -28,9 +29,9 @@ vec3 vertex(int id, int instance) {
   vec2 gridPos = vec2(float(instance / grassInstanceSide), -float(instance % grassInstanceSide));
   vec2 randPos = vec2(rand1(finst), rand2(finst));
   vec2 pos = spacingPerGrass * (gridPos + randPos);
-  float deg = vertex.y * grassRotate;
+  float deg = vertex.y * grassRotate * mix(0.7, 1.0, rand1(finst));
   float rot = rand2(finst);
-  vec3 up = vertex.y * vec3(sin(deg)*sin(rot), cos(deg), sin(deg)*cos(rot));
+  vec3 up = vertex.y * vec3(sin(deg)*sin(rot), cos(deg), sin(deg)*cos(rot)) * mix(0.6, 1.0, rand1(finst));
 
   vec3 base = vec3(pos.x, 0, pos.y) + up;
   vec3 ground = vec3(0, height(pos), 0);
@@ -47,4 +48,5 @@ void main() {
   gl_Position = projection * position4;
   vid = gl_VertexID;
   grassId = float(gl_InstanceID);
+  grassHeight = grassVertex.y;
 }
