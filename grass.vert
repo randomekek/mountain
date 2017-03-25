@@ -4,6 +4,7 @@ uniform float spacingPerGrass;
 uniform float grassInstanceSide;
 uniform vec2 grassSize;
 uniform float grassRotate;
+uniform float time;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -30,7 +31,8 @@ vec3 vertex(int id) {
   float finst = 0.05 * (grassGrid.x * grassInstanceSide + grassGrid.y);
   vec2 randPos = vec2(rand1(finst), rand2(finst));
   vec2 pos = spacingPerGrass * (gridPos + randPos);
-  float deg = (0.2 + vertex.y/5.0) * grassRotate * mix(0.7, 1.0, rand1(finst));
+  float bendStrength = grassRotate * (0.3 + 0.2 * sin(time + 2.0 * grassGrid.y / grassInstanceSide + 0.3 * rand2(finst)));
+  float deg = (0.2 + vertex.y/5.0) * bendStrength * mix(0.7, 1.0, rand1(finst));
   float rot = mix(-0.1, 0.1, rand2(finst));
   vec3 up = vec3(sin(deg)*sin(rot), cos(deg), sin(deg)*cos(rot)) * mix(0.6, 1.0, rand1(finst));
 
