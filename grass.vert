@@ -1,7 +1,7 @@
 uniform float heightScale;
 uniform sampler2D heightMap;
 uniform float spacingPerGrass;
-uniform int grassInstanceSide;
+uniform float grassInstanceSide;
 uniform vec2 grassSize;
 uniform float grassRotate;
 uniform mat4 model;
@@ -9,6 +9,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 in vec2 grassVertex;
+in vec2 grassGrid;
 
 flat out int vid;
 flat out float grassId;
@@ -22,11 +23,11 @@ float height(vec2 pos) {
   return heightScale*texture(heightMap, pos*0.02).x;
 }
 
-vec3 vertex(int id, int instance) {
+vec3 vertex(int id) {
   vec2 vertex = grassSize * grassVertex;
 
-  float finst = float(instance);
-  vec2 gridPos = vec2(float(instance / grassInstanceSide), -float(instance % grassInstanceSide));
+  vec2 gridPos = grassGrid * vec2(1, -1);
+  float finst = 0.05 * (grassGrid.x * grassInstanceSide + grassGrid.y);
   vec2 randPos = vec2(rand1(finst), rand2(finst));
   vec2 pos = spacingPerGrass * (gridPos + randPos);
   float deg = (0.2 + vertex.y/5.0) * grassRotate * mix(0.7, 1.0, rand1(finst));
@@ -42,11 +43,11 @@ vec3 vertex(int id, int instance) {
 }
 
 void main() {
-  vec3 pos = vertex(gl_VertexID, gl_InstanceID);
+  vec3 pos = vertex(gl_VertexID);
   vec4 position4 = view * model * vec4(pos, 1.0);
   position = position4.xyz / position4.w;
   gl_Position = projection * position4;
   vid = gl_VertexID;
-  grassId = float(gl_InstanceID);
+  grassId = float(grassGrid.x * grassInstanceSide + grassGrid.y);
   grassHeight = grassVertex.y/5.0;
 }

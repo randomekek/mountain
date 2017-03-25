@@ -34,13 +34,19 @@ const offset = 6;
 const heightScale = 0.0;
 const grassSegments = 6;
 const grassInstanceSide = 60;
-const grassSize = [0.01, 0.8 / grassSegments];
+const grassSize = [0.03, 1.3 / grassSegments];
 const grassRotate = 0.6 * Math.PI;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
 const grassTriangles = ezgl.createBuffer(lineTriangles(grassSegments), {type: gl.ELEMENT_ARRAY_BUFFER});
 const grassVertex = ezgl.AttributeArray({ size: 2, divisor: 0, data: new Float32Array([ -1, 0, 1, 0, -1, 1, 1, 1, -1, 2, 1, 2, -1, 3, 1, 3, -1, 4, 1, 4, -1, 5, 1, 5, -1, 6, 1, 6]) });
+const grassGrids = [
+  ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 0) }),
+  ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 1) }),
+  ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 2) }),
+  ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 3) }),
+];
 const axisLines = ezgl.createBuffer(new Uint32Array([0, 1, 0, 2, 0, 3]), {type: gl.ELEMENT_ARRAY_BUFFER});
 const viewport = ezgl.AttributeArray({
   size: 2,
@@ -92,8 +98,9 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     gl.disable(gl.CULL_FACE);
     ezgl.bind(grass, {
       grassVertex,
+      grassGrid: grassGrids[gridFacing(view)],
       spacingPerGrass: gridCount * gridSpacing / grassInstanceSide,
-      grassRotate: grassRotate * Math.sin(Date.now() % 100000 / 1000),
+      grassRotate: grassRotate * 0.5, //Math.sin(Date.now() % 100000 / 1000),
       grassInstanceSide,
       grassSize,
       heightMap, heightScale,
@@ -134,6 +141,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
 });
 
 function planeTriangles(n) {
+  // connect a plane of triangles
   var triangles = new Uint32Array((2*n+1)*n);
   let j = 0, a = 0, incr = 1;
   for (let row=0; row<n; row++) {
@@ -150,11 +158,42 @@ function planeTriangles(n) {
 }
 
 function lineTriangles(n) {
+  // connect single strip of points
   var triangles = new Uint16Array(2*n+2);
   for (let row=0; row<2*n+2; row++) {
     triangles[row] = row;
   }
   return triangles;
+}
+
+function gridPoints(n, face) {
+  // square grid spaced points, starting from face
+  // face { 0: z=x, 1: z=-x, 2: z=z, 3: z=-z }
+  var points = new Float32Array(2*n*n);
+  let i = 0;
+  for (let row=0; row<n; row++) {
+    for (let col=0; col<n; col++) {
+      if (face == 0) {
+        points[i++] = row;
+        points[i++] = col;
+      } else if (face == 1) {
+        points[i++] = n-row;
+        points[i++] = col;
+      } else if (face == 2) {
+        points[i++] = col;
+        points[i++] = row;
+      } else if (face == 3) {
+        points[i++] = col;
+        points[i++] = n-row;
+      }
+    }
+  }
+  return points;
+}
+
+function gridFacing(view) {
+  const x = view[8], z = view[10], ax = Math.abs(x), az = Math.abs(z);
+  return ax > az ? (x > 0 ? 0 : 1) : (z > 0 ? 2 : 3);
 }
 
 function generateHeightMap(program, noise) {
