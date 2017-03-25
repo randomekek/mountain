@@ -15,12 +15,12 @@ function Ezgl(gl) {
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      let errors = gl.getShaderInfoLog(shader).split('\n');
+      const errors = gl.getShaderInfoLog(shader).split('\n');
       for(let i=0; i<errors.length - 1; i++) {
-        let match = /ERROR: [^:]*:(\d+): (.*)$/.exec(errors[i]);
+        const match = /ERROR: [^:]*:(\d+): (.*)$/.exec(errors[i]);
         if(match) {
-          let index = parseInt(match[1]);
-          let lines = code.split(/\n|\r/g);
+          const index = parseInt(match[1]);
+          const lines = code.split(/\n|\r/g);
           console.error(match[2], '\n ', lines.slice(index-3, index-1).join('\n  ') + '\n> ' + lines.slice(index-1, index+2).join('\n  '));
         } else {
           console.error(errors[i]);
@@ -72,26 +72,20 @@ function Ezgl(gl) {
   }
 
   // single threaded cache.
-  var currentProgram;
-  var currentEnabledIndices = [];
+  let currentProgram = null;
   function bind(program, bindings={}) {
     if (program.program != currentProgram) {
       gl.useProgram(program.program);
-      for (var i=0; i<currentEnabledIndices.length; i++) {
-        // gl.disableVertexAttribArray(currentEnabledIndices[i]);
-      }
-      currentEnabledIndices = [];
     }
 
     let texture = 0;
-    for (let name in bindings) {
+    for (const name in bindings) {
       const value = bindings[name];
       const {binding_type, type, index} = program.bindings[name];
       if (binding_type == attribute) {
         if (value.constructor == AttributeArray) {
           console.assert(value.buffer.constructor == WebGLBuffer);
           gl.enableVertexAttribArray(index);
-          currentEnabledIndices.push(index);
           gl.bindBuffer(gl.ARRAY_BUFFER, value.buffer);
           if (value.type == gl.FLOAT) {
             gl.vertexAttribPointer(index, value.size, value.type, value.normalized, value.stride, value.offset);
@@ -191,7 +185,7 @@ function Ezgl(gl) {
   }
 
   function createRenderTargets({width, height, textures, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
-    let targets = {textures, depth: null};
+    const targets = {textures, depth: null};
     for (let i=0; i<textures.length; i++) {
       gl.bindTexture(gl.TEXTURE_2D, textures[i]);
       gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
