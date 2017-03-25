@@ -64,7 +64,7 @@ function Ezgl(gl) {
     return {program, bindings: getBindings(program, vertex, fragment)};
   }
 
-  function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0, divisor=null}) {
+  function AttributeArray({buffer=null, data=null, size=1, type=gl.FLOAT, normalized=false, stride=0, offset=0, divisor=0}) {
     if (data != null) {
       buffer = createBuffer(data);
     }
@@ -98,9 +98,7 @@ function Ezgl(gl) {
           } else {
             gl.vertexAttribIPointer(index, value.size, value.type, value.stride, value.offset);
           }
-          if (value.divisor != null) {
-            gl.vertexAttribDivisor(index, value.divisor);
-          }
+          gl.vertexAttribDivisor(index, value.divisor);
         } else {
           gl.disableVertexAttribArray(index);
           switch (type) {
