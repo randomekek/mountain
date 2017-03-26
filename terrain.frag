@@ -22,6 +22,10 @@ void main() {
   float dotNH = max(dot(normal, halfVec), 0.0);
 
   // phong: diffuse = dotNL; specular = pow(dotNH, 11.0);
+  vec3 darkness = vec3(-0.2);
+  vec3 baseGrass = vec3(0.3, 0.5, 0.2);
+  fragColor = vec4(max(dotNL, 0.6)*vec3(baseGrass + darkness), 1.0);
+  return;
 
   // pbr
   // friendly description - https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf

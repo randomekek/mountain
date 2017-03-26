@@ -28,13 +28,13 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 90;
+const gridCount = 80;
 const gridSpacing = 0.2;
 const offset = 6;
-const heightScale = 5.0;
-const landScale = 0.01;
-const grassSegments = 6;
-const grassInstanceSide = 150;
+const heightScale = 9.0;
+const landScale = 0.02;
+const grassSegments = 5;
+const grassInstanceSide = 200;
 const grassSize = [0.03, 1.3 / grassSegments];
 const grassRotate = 0.2 * Math.PI;
 
@@ -42,6 +42,7 @@ const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELE
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
 const grassTriangles = ezgl.createBuffer(lineTriangles(grassSegments), {type: gl.ELEMENT_ARRAY_BUFFER});
 const grassVertex = ezgl.AttributeArray({ size: 2, divisor: 0, data: new Float32Array([ -1, 0, 1, 0, -1, 1, 1, 1, -1, 2, 1, 2, -1, 3, 1, 3, -1, 4, 1, 4, -1, 5, 1, 5, -1, 6, 1, 6]) });
+const grassRand = ezgl.AttributeArray({ size: 4, divisor: 1, data: rands(4 * grassInstanceSide * grassInstanceSide) });
 const grassGrids = [
   ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 0) }),
   ezgl.AttributeArray({ size: 2, divisor: 1, data: gridPoints(grassInstanceSide, 1) }),
@@ -59,7 +60,7 @@ const axisPoints = ezgl.AttributeArray({
 });
 
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
-mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, -3, 0.5*gridCount*gridSpacing]);
+mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, -5, 0.5*gridCount*gridSpacing]);
 
 ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
@@ -83,7 +84,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 1, 3, 0);
+    vec3.set(light, 10, 20, 0);
     vec3.rotateY(light, light, origin, (2.6*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
@@ -102,6 +103,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       grassGrid: grassGrids[gridFacing(view)],
       spacingPerGrass: gridCount * gridSpacing / grassInstanceSide,
       grassRotate: grassRotate,
+      grassRand,
       time: Date.now() % 100000 / 1000,
       grassInstanceSide,
       grassSize,
@@ -213,6 +215,15 @@ function generateHeightMap(program, noise) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   return renderTargets.textures[0];
 }
+
+function rands(n) {
+  let value = new Float32Array(n);
+  for (let i=0; i<n; i++) {
+    value[i] = Math.random();
+  }
+  return value;
+}
+
 
 document.body.onmousemove = function(event) {
   rotX = (event.clientX / document.body.offsetWidth - 0.5) * Math.PI * 2;
