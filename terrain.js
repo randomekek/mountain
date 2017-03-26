@@ -28,14 +28,15 @@ let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
 
-const gridCount = 30;
+const gridCount = 90;
 const gridSpacing = 0.2;
 const offset = 6;
-const heightScale = 0.0;
+const heightScale = 5.0;
+const landScale = 0.01;
 const grassSegments = 6;
-const grassInstanceSide = 60;
+const grassInstanceSide = 150;
 const grassSize = [0.03, 1.3 / grassSegments];
-const grassRotate = 0.6 * Math.PI;
+const grassRotate = 0.2 * Math.PI;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
@@ -58,7 +59,7 @@ const axisPoints = ezgl.AttributeArray({
 });
 
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
-mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
+mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, -3, 0.5*gridCount*gridSpacing]);
 
 ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
@@ -82,8 +83,8 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 3, 3, 0);
-    vec3.rotateY(light, light, origin, (0.6*Date.now()/1000) % (2 * Math.PI));
+    vec3.set(light, 1, 3, 0);
+    vec3.rotateY(light, light, origin, (2.6*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
     gl.depthMask(false);
@@ -104,7 +105,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       time: Date.now() % 100000 / 1000,
       grassInstanceSide,
       grassSize,
-      heightMap, heightScale,
+      heightMap, heightScale, landScale,
       light: lightView,
       model, view, projection,
     });
@@ -116,7 +117,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       landDummyAttribute,
       gridCount,
       gridSpacing,
-      heightMap, heightScale,
+      heightMap, heightScale, landScale,
       time: (Date.now() % 1000000) / 100000,
       light: lightView,
       model, view, projection,
