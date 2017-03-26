@@ -14,7 +14,7 @@ out vec4 fragColor;
 
 void main() {
   vec3 darkness = vec3(mix(-0.2, 0.0, grassHeight));
-  vec3 shade = vec3(0); //0.15*grassRand2.a*vec3(0.8, 1, 0.5);
+  vec3 shade = 0.03*grassRand2.a*vec3(0.8, 1, 0.5);
   vec3 baseGrass = vec3(0.3, 0.5, 0.2);
 
   // direction

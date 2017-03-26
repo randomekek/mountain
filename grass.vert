@@ -58,4 +58,5 @@ void main() {
 
   position = position4.xyz / position4.w;
   gl_Position = projection * position4;
+  grassRand2 = grassRand;
 }

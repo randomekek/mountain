@@ -1,6 +1,5 @@
 // TODO:
-// * more complex terrain
-// * grass
+// * structured terrain
 // * render further
 // * environment map
 // * camera control
@@ -32,11 +31,11 @@ const gridCount = 80;
 const gridSpacing = 0.2;
 const offset = 6;
 const heightScale = 9.0;
-const landScale = 0.02;
+const landScale = 0.005;
 const grassSegments = 5;
 const grassInstanceSide = 200;
 const grassSize = [0.03, 1.3 / grassSegments];
-const grassRotate = 0.2 * Math.PI;
+const grassRotate = 0.1 * Math.PI;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
@@ -85,7 +84,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateY(view, view, rotX);
 
     vec3.set(light, 10, 20, 0);
-    vec3.rotateY(light, light, origin, (2.6*Date.now()/1000) % (2 * Math.PI));
+    vec3.rotateY(light, light, origin, (0.0*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
     gl.depthMask(false);
