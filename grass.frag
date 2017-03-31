@@ -27,5 +27,5 @@ void main() {
   float dotNL = max(dot(normal, toLight), 0.0);
   float dotNH = max(dot(normal, halfVec), 0.0);
 
-  fragColor = vec4(max(dotNL + 0.2*pow(dotNH, 5.0), 0.6) * (baseGrass + shade + darkness), 1.0);
+  fragColor = vec4((max(dotNL, 0.7) + 0.3*pow(dotNH, 5.0)) * (baseGrass + shade + darkness), 1.0);
 }

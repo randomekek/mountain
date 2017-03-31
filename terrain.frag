@@ -29,6 +29,6 @@ void main() {
   } else {
     vec3 darkness = vec3(-0.2);
     vec3 baseGrass = vec3(0.3, 0.5, 0.2);
-    fragColor = vec4(max(dotNL, 0.6)*vec3(baseGrass + darkness), 1.0);
+    fragColor = vec4((max(dotNL, 0.7) + 0.3*pow(dotNH, 5.0))*vec3(baseGrass + darkness), 1.0);
   }
 }
