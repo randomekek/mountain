@@ -1,5 +1,10 @@
 // TODO:
 // * structured terrain
+//   * water
+//   * sand
+//   * grass
+//   * trees
+//   * snow
 // * render further
 // * environment map
 // * camera control
@@ -26,8 +31,9 @@ let isRender = true;
 let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
+let fps = 0, tpf = 0, start = Date.now();
 
-const gridCount = 80;
+const gridCount = 150;
 const gridSpacing = 0.2;
 const offset = 6;
 const heightScale = 9.0;
@@ -36,6 +42,7 @@ const grassSegments = 5;
 const grassInstanceSide = 200;
 const grassSize = [0.03, 1.3 / grassSegments];
 const grassRotate = 0.1 * Math.PI;
+const waterLevel = 4.1;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
@@ -59,7 +66,7 @@ const axisPoints = ezgl.AttributeArray({
 });
 
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
-mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, -5, 0.5*gridCount*gridSpacing]);
+mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
 
 ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag'], r => {
   const noise = ezgl.texImage2D(r.tex16_png);
@@ -70,10 +77,11 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
   const identity = ezgl.createProgram(r.axis_vert, r.axis_frag);
   const heightMap = generateHeightMap(fbm, noise);
 
-  setInterval(render, 1000/30);
+  window.requestAnimationFrame(render);
 
   function render() {
     if(!isRender) {
+      window.requestAnimationFrame(render);
       return;
     }
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
@@ -103,6 +111,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       spacingPerGrass: gridCount * gridSpacing / grassInstanceSide,
       grassRotate: grassRotate,
       grassRand,
+      waterLevel,
       time: Date.now() % 100000 / 1000,
       grassInstanceSide,
       grassSize,
@@ -111,7 +120,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, grassTriangles);
-    gl.drawElementsInstanced(gl.TRIANGLE_STRIP, grassSegments*2+2, gl.UNSIGNED_SHORT, 0, grassInstanceSide * grassInstanceSide);
+    //gl.drawElementsInstanced(gl.TRIANGLE_STRIP, grassSegments*2+2, gl.UNSIGNED_SHORT, 0, grassInstanceSide * grassInstanceSide);
     gl.enable(gl.CULL_FACE);
 
     ezgl.bind(terrain, {
@@ -119,6 +128,8 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       gridCount,
       gridSpacing,
       heightMap, heightScale, landScale,
+      waterLevel,
+      noise,
       time: (Date.now() % 1000000) / 100000,
       light: lightView,
       model, view, projection,
@@ -140,6 +151,12 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       model: axisModel, view, projection,
     });
     gl.drawArrays(gl.POINTS, 0, 1);
+
+    const duration = Date.now() - start;
+    document.getElementById('tpf').innerText = 'tpf: ' + (tpf = 0.9 * tpf + 0.1 * (duration)).toFixed(0);
+    document.getElementById('fps').innerText = 'fps: ' + (fps = 0.9 * fps + 0.1 * (1000 / (duration + 1))).toFixed(0);
+    start = Date.now();
+    window.requestAnimationFrame(render);
   }
 });
 

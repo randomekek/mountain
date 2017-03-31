@@ -20,9 +20,12 @@ void main() {
   // direction
   vec3 toLight = normalize(light - position);
   vec3 normal = normalize(uNormal);
+  vec3 toView = -normalize(position);
+  vec3 halfVec = normalize(toLight + toView);
 
   // angle
-  float dotNL = max(dot(normal, toLight), 0.6);
+  float dotNL = max(dot(normal, toLight), 0.0);
+  float dotNH = max(dot(normal, halfVec), 0.0);
 
-  fragColor = vec4(dotNL*(baseGrass + shade + darkness), 1.0);
+  fragColor = vec4(max(dotNL + 0.2*pow(dotNH, 5.0), 0.6) * (baseGrass + shade + darkness), 1.0);
 }
