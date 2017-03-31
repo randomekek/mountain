@@ -44,11 +44,27 @@ vec2 sampleNoise(in vec3 x) {
   vec4 rg = texture(noise, (uv + 0.5)/256.0);
   return -1.0+2.0*mix(vec2(rg.x, rg.z), vec2(rg.y, rg.w), f.z);
 }
+
+float wavelet(vec2 pos, vec2 rand, float choppy) {
+  pos += 0.2 * rand;
+  return pow(1.0 - abs(sin(pos.x)*sin(0.4*pos.y)), choppy) - 0.5;
+}
+
 float waveHeight(vec2 pos) {
-  pos *= 0.5;
-  vec2 n = sampleNoise(vec3(pos, 0.0));
-  pos += 0.5 * n;
-  return pow(1.0-abs(sin(pos.x)), 5.0);
+  vec2 rand = sampleNoise(vec3(0.3*pos, 0.0));
+  float s = sin(2.0*PI/3.1);
+  float c = cos(2.0*PI/3.1);
+  mat2 rot = mat2(c, -s, s, c);
+  mat2 rot2 = rot*rot;
+  float t = 40.0*time;
+  return (
+    0.70*wavelet(0.3*pos + t, rand, 1.6) +
+    0.22*wavelet(pos + t, rand, 1.8) +
+    0.22*wavelet(rot*pos + t, rand, 1.8) +
+    0.22*wavelet(rot2*pos + t, rand, 1.8) +
+    0.10*wavelet(1.8*pos + t, rand, 1.1) +
+    0.10*wavelet(1.8*rot*pos + t, rand, 1.1) +
+    0.10*wavelet(1.8*rot2*pos + t, rand, 1.1));
 }
 
 void main() {
