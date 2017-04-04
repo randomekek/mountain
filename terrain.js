@@ -68,7 +68,8 @@ const axisPoints = ezgl.AttributeArray({
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
 mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
 
-ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag'], r => {
+ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag', 'water.glsl', 'util.glsl'], r => {
+  ezgl.library(r, ['water.glsl', 'util.glsl']);
   const noise = ezgl.texImage2D(r.tex16_png);
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
   const sky = ezgl.createProgram(r.screen_vert, r.sky_frag);

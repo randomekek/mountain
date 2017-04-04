@@ -2,11 +2,39 @@ function Ezgl(gl) {
   const offscreen = gl.createFramebuffer();
   const attribute = Symbol('attribute'), uniform = Symbol('uniform');
   const sizes = {int: 1, float: 1, vec2: 2, vec3: 3, vec4: 4, mat2: 4, mat3: 9, mat4: 16};
+  const includes = {};
+
+  function library(obj, paths) {
+    for(let path of paths) {
+      includes[path] = obj[path.replace(/\W/g, '_')];
+    }
+  }
 
   function preprocessSource(code) {
     const baseIndent = /^\n?( *)/.exec(code)[1];
     const re = new RegExp('^' + baseIndent, 'mg');
-    return '#version 300 es\nprecision highp float;\n' + code.replace(re, '');
+    code = code.replace(re, '');
+    // includes
+    let included = new Set();
+    while (true) {
+      let changed = false;
+      code = code.replace(/^#include "([^"]*)"$/mg, (_, path) => {
+        if (!included.has(path)) {
+          changed = true;
+          included.add(path);
+          if (!includes[path]) {
+            throw 'Include not found: "' + path + '"';
+          }
+          return includes[path];
+        } else {
+          return '';
+        }
+      });
+      if (!changed) {
+        break;
+      }
+    }
+    return '#version 300 es\nprecision highp float;\n' + code;
   }
 
   function compileShader(shader_type, code) {
@@ -208,7 +236,7 @@ function Ezgl(gl) {
     }
   }
 
-  return {createProgram, AttributeArray, bind, createBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
+  return {library, createProgram, AttributeArray, bind, createBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering

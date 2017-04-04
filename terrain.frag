@@ -1,13 +1,16 @@
 uniform vec3 light;
-const float PI = 3.1415926535897932384626433832795;
-float pow2(float x) { return x*x; }
+uniform sampler2D noise;
 uniform mat4 view;
+uniform float time;
 
 in vec3 uNormal;
 in vec3 position;
 in float water;
+in vec2 pos;
 
 out vec4 fragColor;
+
+#include "water.glsl"
 
 void main() {
   // direction
@@ -25,10 +28,13 @@ void main() {
   // phong: diffuse = dotNL; specular = pow(dotNH, 11.0);
   if (water > 0.5) {
     vec3 water = vec3(0.3, 0.4, 0.8);
-    fragColor = vec4(max(dotNL + fract(position * mat3(view)), 0.6)*vec3(water), 1.0);
+    normal = normalize(mat3(view) * water_normal(pos, time));
+    float dotNL = abs(dot(normal, toLight), 0.0);
+    fragColor = vec4(max(dotNL, 0.1)*(water), 1.0);
+    //fragColor = vec4(max(dotNL + fract(position * mat3(view)), 0.6)*(water), 1.0);
   } else {
     vec3 darkness = vec3(-0.2);
     vec3 baseGrass = vec3(0.3, 0.5, 0.2);
-    fragColor = vec4((max(dotNL, 0.7) + 0.3*pow(dotNH, 5.0))*vec3(baseGrass + darkness), 1.0);
+    fragColor = vec4((max(dotNL, 0.7) + 0.3*pow(dotNH, 5.0))*(baseGrass + darkness), 1.0);
   }
 }

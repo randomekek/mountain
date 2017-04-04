@@ -20,8 +20,7 @@ out float grassHeight;
 out vec3 uNormal;
 flat out vec4 grassRand2;
 
-float rand1(float x) { return fract(sin(x * 12.9898 + 1.0) * 43758.5453); }
-float rand2(float x) { return fract(sin(x * 78.233 + 1.0) * 43758.5453); }
+#include "util.glsl"
 
 float height(vec2 pos) {
   return heightScale*(texture(heightMap, pos*landScale).x - 0.5);
