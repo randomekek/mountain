@@ -50,21 +50,39 @@ float wavelet(vec2 pos, vec2 rand, float choppy) {
   return pow(1.0 - abs(sin(pos.x)*sin(0.4*pos.y)), choppy) - 0.5;
 }
 
+
+float noise_sharp(vec2 pos, float t) {
+    pos = pos + vec2(0, t);
+    pos = pos + sampleNoise(vec3(pos, 0));
+    return  (0.5+0.5*sin(1.5*pos.x))*(1.0-abs(sin(pos.y)));
+}
+
+float noise_soft(vec2 pos, float t) {
+    pos = pos + vec2(0, t);
+    pos = pos + sampleNoise(vec3(pos, 0));
+    return 0.5+0.5*sin(pos.y)*sin(pos.x);
+}
+
 float waveHeight(vec2 pos) {
   vec2 rand = sampleNoise(vec3(0.3*pos, 0.0));
+  float pi2 = PI*0.5;
   float s = sin(2.0*PI/3.1);
   float c = cos(2.0*PI/3.1);
-  mat2 rot = mat2(c, -s, s, c);
-  mat2 rot2 = rot*rot;
-  float t = 40.0*time;
-  return (
-    0.70*wavelet(0.3*pos + t, rand, 1.6) +
-    0.22*wavelet(pos + t, rand, 1.8) +
-    0.22*wavelet(rot*pos + t, rand, 1.8) +
-    0.22*wavelet(rot2*pos + t, rand, 1.8) +
-    0.10*wavelet(1.8*pos + t, rand, 1.1) +
-    0.10*wavelet(1.8*rot*pos + t, rand, 1.1) +
-    0.10*wavelet(1.8*rot2*pos + t, rand, 1.1));
+  mat2 r = mat2(c, -s, s, c);
+  mat2 r2 = r*r;
+  float t = 100.0*time;
+  return 0.5*(
+    1.0*noise_sharp(0.25*pos, 0.4*t) +
+    1.0*noise_sharp(0.25*pos+pi2, -0.4*t) +
+    0.25*wavelet(pos + 0.8*t, rand, 1.8) +
+    0.25*wavelet(r*pos + 0.8*t, rand, 1.8) +
+    0.25*wavelet(r2*pos + 0.8*t, rand, 1.8) +
+    0.25*noise_sharp(1.0*pos, 0.8*t) +
+    0.25*noise_sharp(1.0*pos+pi2, -0.8*t) +
+    0.061*noise_soft(4.0*pos, 1.6*t) +
+    0.061*noise_soft(4.0*pos+pi2, -1.6*t) +
+    0.015*noise_soft(16.0*pos, 3.2*t) +
+    0.015*noise_soft(16.0*pos+pi2, -3.2*t));
 }
 
 void main() {
