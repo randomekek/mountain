@@ -35,22 +35,23 @@ float water::height(vec2 pos, float time) {
   float c = cos(2.0*util::PI/3.1);
   mat2 r = mat2(c, -s, s, c);
   float t = 100.0*time;
-  return 1.5*(
+  return 0.5*(
     1.00*water::sharp(0.25*pos, 0.4*t) +
-    // 1.00*water::sharp(0.25*pos+pi2, -0.4*t) +
-    // 0.25*water::wave(pos, 0.8*t) +
-    // 0.25*water::wave(r*pos, 0.8*t) +
-    // 0.25*water::wave(r*r*pos, 0.8*t) +
-    // 0.25*water::sharp(1.0*pos, 0.8*t) +
-    // 0.25*water::sharp(1.0*pos+pi2, -0.8*t) +
-    // 0.061*water::soft(4.0*pos, 1.6*t) +
-    // 0.061*water::soft(4.0*pos+pi2, -1.6*t) +
-    // 0.015*water::soft(16.0*pos, 3.2*t) +
-    0.015*water::soft(16.0*pos+pi2, -3.2*t));
+    1.00*water::sharp(0.25*pos+pi2, -0.4*t) +
+    0.25*water::wave(pos, 0.8*t) +
+    0.25*water::wave(r*pos, 0.8*t) +
+    0.25*water::wave(r*r*pos, 0.8*t) +
+    0.25*water::sharp(1.0*pos, 0.8*t) +
+    0.25*water::sharp(1.0*pos+pi2, -0.8*t) +
+    0.061*water::soft(4.0*pos, 1.6*t) +
+    0.061*water::soft(4.0*pos+pi2, -1.6*t) +
+    0.015*water::soft(16.0*pos, 3.2*t) +
+    0.015*water::soft(16.0*pos+pi2, -3.2*t) +
+    0.0);
 }
 
 vec3 water::normal(vec2 pos, float time) {
-  float delta = 0.1;
+  float delta = 0.01;
   vec2 off = vec2(delta, 0.0);
   float x1 = water::height(pos - off, time);
   float x2 = water::height(pos + off, time);

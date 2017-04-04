@@ -28,7 +28,7 @@ vec2 plane(int id) {
 }
 
 void main() {
-  vec2 pos = gridSpacing * plane(gl_VertexID);
+  pos = gridSpacing * plane(gl_VertexID);
   float h = terrain::height(pos);
   vec4 position4;
   if (h > waterLevel) {
@@ -37,8 +37,8 @@ void main() {
     water = 0.0;
   } else {
     h = /* waterLevel + */ water::height(pos, time);
+    uNormal = mat3(view) * water::normal(pos, time);
     position4 = view * model * vec4(pos.x, h, pos.y, 1.0);
-    uNormal = view[1].xyz;
     water = 1.0;
   }
   position = position4.xyz / position4.w;
