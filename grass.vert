@@ -20,22 +20,7 @@ out float grassHeight;
 out vec3 uNormal;
 flat out vec4 grassRand2;
 
-#include "util.glsl"
-
-float height(vec2 pos) {
-  return heightScale*(texture(heightMap, pos*landScale).x - 0.5);
-  //return heightScale*sin(pos.x)*sin(pos.y);
-}
-
-vec3 getNormal(vec2 pos) {
-  float delta = 0.4;
-  vec2 off = vec2(delta, 0.0);
-  float x1 = height(pos - off);
-  float x2 = height(pos + off);
-  float y1 = height(pos - off.yx);
-  float y2 = height(pos + off.yx);
-  return vec3(x1 - x2, 2.0 * delta, y1 - y2);
-}
+#include "terrain.glsl"
 
 void main() {
   vec2 vertex = grassSize * grassVertex;
@@ -48,7 +33,7 @@ void main() {
   float deg = (0.2 + grassHeight) * bendStrength * mix(0.7, 1.0, grassRand.w);
   float rot = mix(-0.3, 0.3, grassRand.z);
   vec3 up = vec3(sin(deg)*sin(rot), cos(deg), sin(deg)*cos(rot)) * mix(0.6, 1.0, grassRand.z);
-  float h = height(pos);
+  float h = terrain::height(pos);
   vec3 base = vec3(pos.x, h, pos.y) + vertex.y * up;
 
   if (h < waterLevel) {
@@ -62,7 +47,7 @@ void main() {
   vec3 perpendicular = mix(1.0, 0.4, grassHeight) * normalize(cross(mat3(view) * up, position4.xyz));
   position4.xyz = position4.xyz + vertex.x * perpendicular;
 
-  uNormal = mat3(view) * getNormal(pos);
+  uNormal = mat3(view) * terrain::normal(pos);
   position = position4.xyz / position4.w;
   gl_Position = projection * position4;
 }

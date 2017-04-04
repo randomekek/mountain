@@ -34,6 +34,8 @@ function Ezgl(gl) {
         break;
       }
     }
+    // namespaces
+    code = code.replace(/\b([\w\d]*)::([\w\d]*)\b/g, (_, left, right) => left + '_' + right);
     return '#version 300 es\nprecision highp float;\n' + code;
   }
 

@@ -29,7 +29,7 @@ void main() {
   if (water > 0.5) {
     vec3 water = vec3(0.3, 0.4, 0.8);
     normal = normalize(mat3(view) * water_normal(pos, time));
-    float dotNL = abs(dot(normal, toLight), 0.0);
+    float dotNL = max(dot(normal, toLight), 0.0);
     fragColor = vec4(max(dotNL, 0.1)*(water), 1.0);
     //fragColor = vec4(max(dotNL + fract(position * mat3(view)), 0.6)*(water), 1.0);
   } else {
