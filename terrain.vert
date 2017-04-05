@@ -37,7 +37,6 @@ void main() {
     water = 0.0;
   } else {
     h = /* waterLevel + */ water::height(pos, time);
-    uNormal = mat3(view) * water::normal(pos, time);
     position4 = view * model * vec4(pos.x, h, pos.y, 1.0);
     water = 1.0;
   }

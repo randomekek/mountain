@@ -31,7 +31,7 @@ let isRender = true;
 let origin = vec3.create();
 let light = vec3.create();
 let lightView = vec3.create();
-let fps = 0, tpf = 0, start = Date.now();
+let tpf = 0, start = Date.now();
 
 const gridCount = 150;
 const gridSpacing = 0.2;
@@ -121,7 +121,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, grassTriangles);
-    //gl.drawElementsInstanced(gl.TRIANGLE_STRIP, grassSegments*2+2, gl.UNSIGNED_SHORT, 0, grassInstanceSide * grassInstanceSide);
+    gl.drawElementsInstanced(gl.TRIANGLE_STRIP, grassSegments*2+2, gl.UNSIGNED_SHORT, 0, grassInstanceSide * grassInstanceSide);
     gl.enable(gl.CULL_FACE);
 
     ezgl.bind(terrain, {
@@ -155,7 +155,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
 
     const duration = Date.now() - start;
     document.getElementById('tpf').innerText = 'tpf: ' + (tpf = 0.9 * tpf + 0.1 * (duration)).toFixed(0);
-    document.getElementById('fps').innerText = 'fps: ' + (fps = 0.9 * fps + 0.1 * (1000 / (duration + 1))).toFixed(0);
+    document.getElementById('fps').innerText = 'fps: ' + (1000 / tpf).toFixed(0);
     start = Date.now();
     window.requestAnimationFrame(render);
   }

@@ -7,26 +7,25 @@ vec2 water::noise(vec2 a) {
   f = f*f*(3.0-2.0*f);
   vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
   vec4 rg = texture(noise, (uv + 0.5)/256.0);
-  return -1.0+2.0*mix(vec2(rg.x, rg.z), vec2(rg.y, rg.w), f.z);
+  return -1.0+2.0*mix(vec2(rg.y, rg.w), vec2(rg.x, rg.z), f.z);
 }
 
 float water::wave(vec2 pos, float t) {
-  float choppy = 0.8;
-  pos = pos + vec2(0, t);
+  pos = pos + t;
   pos += 0.2 * water::noise(pos);
-  return pow(1.0 - abs(sin(pos.x)*sin(0.4*pos.y)), choppy) - 0.5;
+  return pow(1.0 - abs(sin(pos.x)*sin(pos.y)), 0.8) - 0.5;
 }
 
 float water::sharp(vec2 pos, float t) {
-    pos = pos + vec2(0, t);
-    pos = pos + water::noise(pos);
-    return (0.5+0.5*sin(1.5*pos.x))*(1.0-abs(sin(pos.y)));
+  pos = pos + t;
+  pos = pos + water::noise(pos);
+  return (0.5+0.5*sin(1.5*pos.x))*(1.0-abs(sin(pos.y)));
 }
 
 float water::soft(vec2 pos, float t) {
-    pos = pos + vec2(0, t);
-    pos = pos + water::noise(pos);
-    return 0.5+0.5*sin(pos.y)*sin(pos.x);
+  pos = pos + t;
+  pos = pos + water::noise(pos);
+  return 0.5+0.5*sin(pos.y)*sin(pos.x);
 }
 
 float water::height(vec2 pos, float time) {

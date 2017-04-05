@@ -18,9 +18,9 @@ function Ezgl(gl) {
     let included = new Set();
     while (true) {
       let changed = false;
-      code = code.replace(/^#include "([^"]*)"$/mg, (_, path) => {
+      code = code.replace(/^#include "([^"]*)"$/m, (_, path) => {
+        changed = true;
         if (!included.has(path)) {
-          changed = true;
           included.add(path);
           if (!includes[path]) {
             throw 'Include not found: "' + path + '"';
@@ -56,9 +56,7 @@ function Ezgl(gl) {
           console.error(errors[i]);
         }
       }
-      if (errors.length > 0) {
-        throw 'shader compile error';
-      }
+      throw 'shader compile error';
     }
     return shader;
   }
@@ -86,9 +84,8 @@ function Ezgl(gl) {
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
     gl.linkProgram(program);
-    const errors = gl.getProgramInfoLog(program);
-    if (errors.length > 0) {
-      console.error(errors);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(program));
       throw 'shader link error';
     }
     return {program, bindings: getBindings(program, vertex, fragment)};
