@@ -153,13 +153,17 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     });
     gl.drawArrays(gl.POINTS, 0, 1);
 
-    const duration = Date.now() - start;
-    document.getElementById('tpf').innerText = 'tpf: ' + (tpf = 0.9 * tpf + 0.1 * (duration)).toFixed(0);
-    document.getElementById('fps').innerText = 'fps: ' + (1000 / tpf).toFixed(0);
+    tpf = 0.9 * tpf + 0.1 * (Date.now() - start);
     start = Date.now();
     window.requestAnimationFrame(render);
   }
 });
+
+
+setInterval(function() {
+  document.getElementById('tpf').innerText = 'tpf: ' + tpf.toFixed(0);
+  document.getElementById('fps').innerText = 'fps: ' + (1000 / tpf).toFixed(0);
+}, 500);
 
 function planeTriangles(n) {
   // connect a plane of triangles
