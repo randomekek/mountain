@@ -19,7 +19,6 @@ float water::wave(vec2 pos, float t) {
 float water::sharp(vec2 pos, float t) {
   pos = pos + t;
   pos = pos + water::noise(pos);
-  vec2 s = sin(pos);
   return (0.5+0.5*sin(1.5*pos.x))*(1.0-abs(sin(pos.y)));
 }
 
