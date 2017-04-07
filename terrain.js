@@ -42,7 +42,7 @@ const grassSegments = 5;
 const grassInstanceSide = 200;
 const grassSize = [0.03, 1.3 / grassSegments];
 const grassRotate = 0.1 * Math.PI;
-const waterLevel = 4.1;
+var waterLevel = 4.1;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
