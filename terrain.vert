@@ -5,7 +5,6 @@ uniform float landScale;
 uniform float time;
 uniform float waterLevel;
 uniform sampler2D heightMap;
-uniform sampler2D waterMap;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -19,6 +18,7 @@ out vec2 pos;
 
 #include "util.glsl"
 #include "terrain.glsl"
+#include "water.glsl"
 
 vec2 plane(int id) {
   int x = id / gridCount;
@@ -35,7 +35,7 @@ void main() {
     uNormal = mat3(view) * terrain::normal(pos);
     water = 0.0;
   } else {
-    h = 3.*texture(waterMap, 0.015 * pos).a;
+    h = water::height(pos);
     position4 = view * model * vec4(pos.x, h, pos.y, 1.0);
     water = 1.0;
   }

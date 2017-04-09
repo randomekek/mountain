@@ -83,7 +83,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
   const heightMap = generateHeightMap(fbm, noise);
   const waterMap = generateWaterMap(water, noise);
 
-  if (true) return showTexture(show, waterMap);
+  if (false) return showTexture(show, waterMap);
 
   window.requestAnimationFrame(render);
 
@@ -99,8 +99,8 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 4, 0, 0);
-    vec3.rotateY(light, light, origin, (0.0*Date.now()/1000) % (2 * Math.PI));
+    vec3.set(light, 4, 5, 0);
+    vec3.rotateY(light, light, origin, (1.0*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
     gl.depthMask(false);

@@ -40,7 +40,6 @@ vec3 normal(vec2 pos) {
 }
 
 void main() {
-  vec2 scaledPos = pos * 50.0;
+  vec2 scaledPos = pos * 20.0;
   fragColor = vec4(normal(scaledPos), height(scaledPos));  // normals encoded in [0-1]
-  fragColor = vec4(height(scaledPos), 0, 0, 1);  // normals encoded in [0-1]
 }
