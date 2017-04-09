@@ -9,7 +9,8 @@
 // * environment map
 // * camera control
 
-const gl = document.querySelector('#canvas').getContext('webgl2'), ezgl = Ezgl(gl);
+const canvas = document.querySelector('#canvas');
+const gl = canvas.getContext('webgl2'), ezgl = Ezgl(gl);
 
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -42,7 +43,7 @@ const grassSegments = 5;
 const grassInstanceSide = 200;
 const grassSize = [0.03, 1.3 / grassSegments];
 const grassRotate = 0.1 * Math.PI;
-const waterLevel = 4.1;
+let waterLevel = 4.1;
 
 const landTriangles = ezgl.createBuffer(planeTriangles(gridCount), {type: gl.ELEMENT_ARRAY_BUFFER});
 const landDummyAttribute = ezgl.AttributeArray({ size: 1, data: new Float32Array((2*gridCount+1)*gridCount) });
@@ -66,9 +67,9 @@ const axisPoints = ezgl.AttributeArray({
 });
 
 mat4.perspective(projection, Math.PI * 0.3, canvas.clientWidth / canvas.clientHeight, 1, 2*gridCount*gridSpacing+offset);
-mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, 0, 0.5*gridCount*gridSpacing]);
+mat4.translate(model, model, [-0.5*0.8660*gridCount*gridSpacing, -1, 0.5*gridCount*gridSpacing]);
 
-ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag', 'water.glsl', 'util.glsl', 'terrain.glsl'], r => {
+ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag', 'fbm.frag', 'grass.vert', 'grass.frag', 'axis.vert', 'axis.frag', 'water.frag', 'water.glsl', 'util.glsl', 'terrain.glsl', 'show.frag'], r => {
   ezgl.library(r, ['water.glsl', 'util.glsl', 'terrain.glsl']);
   const noise = ezgl.texImage2D(r.tex16_png);
   const terrain = ezgl.createProgram(r.terrain_vert, r.terrain_frag);
@@ -76,7 +77,13 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
   const fbm = ezgl.createProgram(r.screen_vert, r.fbm_frag);
   const grass = ezgl.createProgram(r.grass_vert, r.grass_frag);
   const identity = ezgl.createProgram(r.axis_vert, r.axis_frag);
+  const water = ezgl.createProgram(r.screen_vert, r.water_frag);
+  const show = ezgl.createProgram(r.screen_vert, r.show_frag);
+
   const heightMap = generateHeightMap(fbm, noise);
+  const waterMap = generateWaterMap(water, noise);
+
+  if (true) return showTexture(show, waterMap);
 
   window.requestAnimationFrame(render);
 
@@ -88,11 +95,11 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
     mat4.identity(view);
-    mat4.translate(view, view, [0, 0, -offset]);
+    mat4.translate(view, view, [0, 0, -3*offset]);
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 10, 20, 0);
+    vec3.set(light, 4, 0, 0);
     vec3.rotateY(light, light, origin, (0.0*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
@@ -129,7 +136,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       gridCount,
       gridSpacing,
       heightMap, heightScale, landScale,
-      waterLevel,
+      waterMap, waterLevel,
       noise,
       time: (Date.now() % 1000000) / 100000,
       light: lightView,
@@ -234,7 +241,34 @@ function generateHeightMap(program, noise) {
   });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
   return renderTargets.textures[0];
+}
+
+function generateWaterMap(program, noise) {
+  const renderTargets = ezgl.createRenderTargets({
+    width: 1024,
+    height: 1024,
+    textures: [ezgl.createTexture()],
+  });
+  ezgl.bindRenderTargets(renderTargets);
+  ezgl.bind(program, {
+    points: viewport,
+    noise,
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+  return renderTargets.textures[0];
+}
+
+function showTexture(program, tex) {
+  ezgl.bind(program, {
+    tex,
+    points: viewport,
+    size: [canvas.clientWidth, canvas.clientHeight],
+  });
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
 function rands(n) {

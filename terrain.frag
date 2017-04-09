@@ -1,8 +1,8 @@
 uniform vec3 light;
-uniform sampler2D noise;
 uniform mat4 view;
 uniform mat4 model;
 uniform float time;
+uniform sampler2D waterMap;
 
 in vec3 uNormal;
 in vec3 position;
@@ -10,8 +10,6 @@ in float water;
 in vec2 pos;
 
 out vec4 fragColor;
-
-#include "water.glsl"
 
 void main() {
   // direction
@@ -28,11 +26,12 @@ void main() {
 
   // phong: diffuse = dotNL; specular = pow(dotNH, 11.0);
   if (water > 0.5) {
-    vec3 water = vec3(0.3, 0.4, 0.8);
-    normal = normalize(mat3(view) * mat3(model) * water::normal(pos, time));
-    float dotNL = max(dot(normal, toLight), 0.0);
+    vec3 water = vec3(0.5);//0.3, 0.4, 0.8);
+    normal = normalize(mat3(view) * mat3(model) * (-1.0 + 2.0 * texture(waterMap, 0.015 * pos).rgb));
+    //float dotNL = max(dot(normal, toLight), 0.0);
+    float dotNL = max(dot(normal, mat3(view)*normalize(vec3(cos(160.*time), 1, sin(160.*time)))), 0.0);
+    fragColor = vec4(fract(position * mat3(view))*water, 1.0);
     fragColor = vec4(max(dotNL, 0.0)*(water), 1.0);
-    //fragColor = vec4(max(dotNL + fract(position * mat3(view)), 0.6)*(water), 1.0);
   } else {
     vec3 darkness = vec3(-0.2);
     vec3 baseGrass = vec3(0.3, 0.5, 0.2);

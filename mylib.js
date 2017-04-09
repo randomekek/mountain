@@ -41,7 +41,6 @@ function Ezgl(gl) {
 
   function compileShader(shader_type, code) {
     const shader = gl.createShader(shader_type);
-    code = preprocessSource(code);
     gl.shaderSource(shader, code);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -81,6 +80,8 @@ function Ezgl(gl) {
 
   function createProgram(vertex, fragment) {
     const program = gl.createProgram();
+    vertex = preprocessSource(vertex);
+    fragment = preprocessSource(fragment);
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertex));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragment));
     gl.linkProgram(program);
@@ -212,7 +213,7 @@ function Ezgl(gl) {
   }
 
   function createRenderTargets({width, height, textures, internalFormat=gl.RGBA, format=gl.RGBA, type=gl.UNSIGNED_BYTE, depth_buffer=false}) {
-    const targets = {textures, depth: null};
+    const targets = {textures, depth: null, width, height};
     for (let i=0; i<textures.length; i++) {
       gl.bindTexture(gl.TEXTURE_2D, textures[i]);
       gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
@@ -233,9 +234,10 @@ function Ezgl(gl) {
     if (renderTargets.depth) {
       gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderTargets.depth);
     }
+    gl.viewport(0, 0, renderTargets.width, renderTargets.height);  // make sure you restore your original size
   }
 
-  return {library, createProgram, AttributeArray, bind, createBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
+  return {library, preprocessSource, createProgram, AttributeArray, bind, createBuffer, createTexture, load, texImage2D, createRenderTargets, bindRenderTargets};
 }
 
 // TODO: 3d texture, srgb, instanced rendering
