@@ -1,7 +1,9 @@
 uniform sampler2D waterMap;
 
-const float water::scale = 0.005;
-const float water::inv_scale = 1.0 / water::scale;
+#include "util.glsl"
+
+const float water::inv_scale = 18.0 * util::PI;
+const float water::scale = 1.0 / water::inv_scale;
 const float water::debug_scale = 1.;
 
 // dynamics: pos * 4, t * 2

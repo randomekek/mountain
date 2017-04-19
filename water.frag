@@ -6,8 +6,8 @@ out vec4 fragColor;
 #include "water.glsl"
 
 float sharp(vec2 pos) {
-  pos = pos + util::noise(pos);
-  return (0.5+0.5*sin(1.5*pos.x))*(1.0-abs(sin(pos.y)));
+  pos = pos + 2.0*util::noise(0.2*pos);
+  return (0.5+0.5*sin(pos.x))*(1.0-abs(sin(0.5*pos.y)));
 }
 
 float soft(vec2 pos) {
@@ -22,14 +22,14 @@ float line(vec2 pos) {
 
 float height(vec2 pos) {
   return (
-    0.5 + 0.5 *sin(pos.x)*sin(pos.y) +
-    //0.5*sharp(pos) +
-    //0.5*sharp(pos + 10.8) +
+    //0.5 + 0.5 *sin(pos.x)*sin(pos.y) +
+    0.5*sharp(pos) +
+    0.5*sharp(-pos + vec2(38.8, 60.5)) +
     0.0);
 }
 
 vec3 normal(vec2 pos) {
-  float delta = 0.05;
+  float delta = 0.1;
   vec2 off = vec2(delta, 0.0);
   float x1 = height(pos - off);
   float x2 = height(pos + off);
