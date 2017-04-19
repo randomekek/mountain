@@ -1,11 +1,17 @@
 uniform sampler2D waterMap;
 
+const float water::scale = 0.005;
+const float water::inv_scale = 1.0 / water::scale;
+const float water::debug_scale = 1.;
+
+// dynamics: pos * 4, t * 2
+
 float water::height(vec2 pos) {
-  return 3.*texture(waterMap, 0.005 * pos).a;
+  return water::debug_scale*texture(waterMap, water::scale * pos).a;
 }
 
 vec3 water::normal(vec2 pos) {
-  return (-1.0 + 2.0 * texture(waterMap, 0.005 * pos).rgb);
+  return (-1.0 + 2.0 * texture(waterMap, water::scale * pos).rgb);
 }
 
 //  float pi2 = util::PI*0.5;

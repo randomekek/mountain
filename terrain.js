@@ -99,7 +99,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
     mat4.rotateX(view, view, rotY);
     mat4.rotateY(view, view, rotX);
 
-    vec3.set(light, 4, 5, 0);
+    vec3.set(light, 5, 5, 0);
     vec3.rotateY(light, light, origin, (1.0*Date.now()/1000) % (2 * Math.PI));
     vec3.transformMat4(lightView, light, view);
 
@@ -140,6 +140,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       noise,
       time: (Date.now() % 1000000) / 100000,
       light: lightView,
+      light_world: light,
       model, view, projection,
     });
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, landTriangles);
@@ -266,7 +267,7 @@ function showTexture(program, tex) {
   ezgl.bind(program, {
     tex,
     points: viewport,
-    size: [canvas.clientWidth, canvas.clientHeight],
+    screenSize: [canvas.clientWidth, canvas.clientHeight],
   });
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }

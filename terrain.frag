@@ -1,4 +1,5 @@
 uniform vec3 light;
+uniform vec3 light_world;
 uniform mat4 view;
 uniform mat4 model;
 uniform float time;
@@ -30,7 +31,7 @@ void main() {
     vec3 water = vec3(0.5);//0.3, 0.4, 0.8);
     normal = normalize(mat3(view) * mat3(model) * water::normal(pos));
     //float dotNL = max(dot(normal, toLight), 0.0);
-    float dotNL = max(dot(normal, mat3(view)*normalize(vec3(cos(160.*time), 1, sin(160.*time)))), 0.0);
+    float dotNL = max(dot(normal, toLight), 0.0);
     fragColor = vec4(fract(position * mat3(view))*water, 1.0);
     fragColor = vec4(max(dotNL, 0.0)*(water), 1.0);
   } else {
