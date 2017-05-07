@@ -138,7 +138,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       heightMap, heightScale, landScale,
       waterMap, waterLevel,
       noise,
-      time: (Date.now() % 1000000) / 100000,
+      time: (Date.now() % 100000) / 1000,
       light: lightView,
       light_world: light,
       model, view, projection,
@@ -250,7 +250,7 @@ function generateWaterMap(program, noise) {
   const renderTargets = ezgl.createRenderTargets({
     width: 1024,
     height: 1024,
-    textures: [ezgl.createTexture()],
+    textures: [ezgl.createTexture({wrap: [gl.REPEAT, gl.REPEAT]})],
   });
   ezgl.bindRenderTargets(renderTargets);
   ezgl.bind(program, {

@@ -8,12 +8,39 @@ const float water::debug_scale = 1.;
 
 // dynamics: pos * 4, t * 2
 
-float water::height(vec2 pos) {
-  return water::debug_scale*texture(waterMap, water::scale * pos).a;
+float water::height(vec2 pos[6]) {
+  return water::debug_scale*(
+    1.00*texture(waterMap, pos[0]).a +
+    1.00*texture(waterMap, pos[1]).a +
+    0.25*texture(waterMap, pos[2]).a +
+    0.25*texture(waterMap, pos[3]).a +
+    0.06*texture(waterMap, pos[4]).a +
+    0.06*texture(waterMap, pos[5]).a +
+    0.0);
 }
 
-vec3 water::normal(vec2 pos) {
-  return (-1.0 + 2.0 * texture(waterMap, water::scale * pos).rgb);
+vec3 water::normal(vec2 pos[6]) {
+  return (
+      -1.0 + 2.0 * texture(waterMap, pos[0]).rgb +
+      -1.0 + 2.0 * texture(waterMap, pos[1]).rgb +
+      normalize(vec3(1,4,1)*(-1.0 + 2.0 * texture(waterMap, pos[2]).rgb)) +
+      normalize(vec3(1,4,1)*(-1.0 + 2.0 * texture(waterMap, pos[3]).rgb)) +
+      normalize(vec3(1,16,1)*(-1.0 + 2.0 * texture(waterMap, pos[4]).rgb)) +
+      normalize(vec3(1,16,1)*(-1.0 + 2.0 * texture(waterMap, pos[5]).rgb)) +
+      0.0);
+}
+
+vec2[6] water::pos(vec2 pos, float time) {
+  vec2 t = vec2(0, time);
+  float PI2 = util::PI*0.5;
+  return vec2[6](
+    water::scale * (1.0*pos + 1.0*t),
+    water::scale * (1.0*pos - 1.0*t + PI2),
+    water::scale * (4.0*pos + 2.0*t),
+    water::scale * (4.0*pos - 2.0*t + PI2),
+    water::scale * (16.0*pos + 4.0*t),
+    water::scale * (16.0*pos - 4.0*t + PI2)
+  );
 }
 
 //  float pi2 = util::PI*0.5;

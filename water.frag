@@ -1,4 +1,5 @@
 in vec2 pos;
+uniform vec2 waterPos[6];
 
 out vec4 fragColor;
 
@@ -35,7 +36,7 @@ vec3 normal(vec2 pos) {
   float x2 = height(pos + off);
   float y1 = height(pos - off.yx);
   float y2 = height(pos + off.yx);
-  return 0.5 + 0.5 * vec3(1,1,-1) * normalize(vec3(x1 - x2, 2.0 * delta, y1 - y2));
+  return 0.5 + 0.5 * normalize(vec3(x1 - x2, 2.0 * delta, y1 - y2));
 }
 
 void main() {

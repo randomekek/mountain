@@ -15,6 +15,7 @@ out vec3 uNormal;
 out vec3 position;
 out float water;
 out vec2 pos;
+out vec2 waterPos[6];
 
 #include "util.glsl"
 #include "terrain.glsl"
@@ -35,7 +36,8 @@ void main() {
     uNormal = mat3(view) * terrain::normal(pos);
     water = 0.0;
   } else {
-    h = water::height(pos);
+    waterPos = water::pos(pos, time);
+    h = water::height(waterPos);
     position4 = view * model * vec4(pos.x, h, pos.y, 1.0);
     water = 1.0;
   }

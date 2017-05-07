@@ -8,6 +8,7 @@ in vec3 uNormal;
 in vec3 position;
 in float water;
 in vec2 pos;
+in vec2 waterPos[6];
 
 out vec4 fragColor;
 
@@ -29,10 +30,9 @@ void main() {
   // phong: diffuse = dotNL; specular = pow(dotNH, 11.0);
   if (water > 0.5) {
     vec3 water = vec3(0.5);//0.3, 0.4, 0.8);
-    normal = normalize(mat3(view) * mat3(model) * water::normal(pos));
-    //float dotNL = max(dot(normal, toLight), 0.0);
+    normal = normalize(mat3(view) * mat3(model) * water::normal(waterPos));
     float dotNL = max(dot(normal, toLight), 0.0);
-    fragColor = vec4(fract(position * mat3(view))*water, 1.0);
+    //fragColor = vec4(fract(position * mat3(view))*water, 1.0);
     fragColor = vec4(max(dotNL, 0.0)*(water), 1.0);
   } else {
     vec3 darkness = vec3(-0.2);
