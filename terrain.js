@@ -81,9 +81,9 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
   const show = ezgl.createProgram(r.screen_vert, r.show_frag);
 
   const heightMap = generateHeightMap(fbm, noise);
-  const waterMap = generateWaterMap(water, noise);
+  const waterMap = generateWaterMaps(water, noise, 3);
 
-  if (false) return showTexture(show, waterMap);
+  if (false) return showTexture(show, waterMap[0]);
 
   window.requestAnimationFrame(render);
 
@@ -136,7 +136,7 @@ ezgl.load(['tex16.png', 'terrain.vert', 'terrain.frag', 'screen.vert', 'sky.frag
       gridCount,
       gridSpacing,
       heightMap, heightScale, landScale,
-      waterMap, waterLevel,
+      waterMap_0: waterMap[0], waterMap_1: waterMap[2], waterMap_2: waterMap[1], waterLevel,
       noise,
       time: (Date.now() % 100000) / 1000,
       light: lightView,
@@ -246,21 +246,26 @@ function generateHeightMap(program, noise) {
   return renderTargets.textures[0];
 }
 
-function generateWaterMap(program, noise) {
-  const renderTargets = ezgl.createRenderTargets({
-    width: 1024,
-    height: 1024,
-    textures: [ezgl.createTexture({wrap: [gl.REPEAT, gl.REPEAT]})],
-  });
-  ezgl.bindRenderTargets(renderTargets);
-  ezgl.bind(program, {
-    points: viewport,
-    noise,
-  });
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+function generateWaterMaps(program, noise, octaves) {
+  let results = [];
+  for (let octave=0; octave<octaves; octave++) {
+    const renderTargets = ezgl.createRenderTargets({
+      width: 1024,
+      height: 1024,
+      textures: [ezgl.createTexture({wrap: [gl.REPEAT, gl.REPEAT]})],
+    });
+    ezgl.bindRenderTargets(renderTargets);
+    ezgl.bind(program, {
+      points: viewport,
+      noise,
+      octave,
+    });
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    results.push(renderTargets.textures[0]);
+  }
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
-  return renderTargets.textures[0];
+  return results;
 }
 
 function showTexture(program, tex) {

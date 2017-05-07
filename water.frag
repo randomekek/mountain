@@ -1,5 +1,6 @@
 in vec2 pos;
-uniform vec2 waterPos[6];
+uniform float octave;
+uniform vec2 waterPos[6];  // unused
 
 out vec4 fragColor;
 
@@ -22,11 +23,15 @@ float line(vec2 pos) {
 }
 
 float height(vec2 pos) {
-  return (
-    //0.5 + 0.5 *sin(pos.x)*sin(pos.y) +
-    0.5*sharp(pos) +
-    0.5*sharp(-pos + vec2(38.8, 60.5)) +
-    0.0);
+  if (octave < 1.5) {
+    return pow(0.25, octave) * (
+      0.5*sharp(pos) +
+      0.5*sharp(-pos + vec2(38.8, 60.5)));
+  } else {
+    return pow(0.25, octave) * (
+      0.5*soft(pos) +
+      0.5*soft(-pos + vec2(38.8, 60.5)));
+  }
 }
 
 vec3 normal(vec2 pos) {
@@ -40,6 +45,6 @@ vec3 normal(vec2 pos) {
 }
 
 void main() {
-  vec2 scaledPos = (0.5 + 0.5 * pos) * water::inv_scale;
+  vec2 scaledPos = pow(4.0, octave) * (0.5 + 0.5 * pos) * water::inv_scale;
   fragColor = vec4(normal(scaledPos), height(scaledPos));  // normals encoded in [0-1]
 }

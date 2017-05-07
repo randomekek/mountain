@@ -1,4 +1,6 @@
-uniform sampler2D waterMap;
+uniform sampler2D waterMap_0;
+uniform sampler2D waterMap_1;
+uniform sampler2D waterMap_2;
 
 #include "util.glsl"
 
@@ -10,23 +12,23 @@ const float water::debug_scale = 1.;
 
 float water::height(vec2 pos[6]) {
   return water::debug_scale*(
-    1.00*texture(waterMap, pos[0]).a +
-    1.00*texture(waterMap, pos[1]).a +
-    0.25*texture(waterMap, pos[2]).a +
-    0.25*texture(waterMap, pos[3]).a +
-    0.06*texture(waterMap, pos[4]).a +
-    0.06*texture(waterMap, pos[5]).a +
+    texture(waterMap_0, pos[0]).a +
+    texture(waterMap_0, pos[1]).a +
+    texture(waterMap_1, pos[2]).a +
+    texture(waterMap_1, pos[3]).a +
+    texture(waterMap_2, pos[4]).a +
+    texture(waterMap_2, pos[5]).a +
     0.0);
 }
 
 vec3 water::normal(vec2 pos[6]) {
   return (
-      -1.0 + 2.0 * texture(waterMap, pos[0]).rgb +
-      -1.0 + 2.0 * texture(waterMap, pos[1]).rgb +
-      normalize(vec3(1,4,1)*(-1.0 + 2.0 * texture(waterMap, pos[2]).rgb)) +
-      normalize(vec3(1,4,1)*(-1.0 + 2.0 * texture(waterMap, pos[3]).rgb)) +
-      normalize(vec3(1,16,1)*(-1.0 + 2.0 * texture(waterMap, pos[4]).rgb)) +
-      normalize(vec3(1,16,1)*(-1.0 + 2.0 * texture(waterMap, pos[5]).rgb)) +
+      -1.0 + 2.0 * texture(waterMap_0, pos[0]).rgb +
+      -1.0 + 2.0 * texture(waterMap_0, pos[1]).rgb +
+      -1.0 + 2.0 * texture(waterMap_1, pos[2]).rgb +
+      -1.0 + 2.0 * texture(waterMap_1, pos[3]).rgb +
+      -1.0 + 2.0 * texture(waterMap_2, pos[4]).rgb +
+      -1.0 + 2.0 * texture(waterMap_2, pos[5]).rgb +
       0.0);
 }
 
@@ -34,12 +36,12 @@ vec2[6] water::pos(vec2 pos, float time) {
   vec2 t = vec2(0, time);
   float PI2 = util::PI*0.5;
   return vec2[6](
-    water::scale * (1.0*pos + 1.0*t),
-    water::scale * (1.0*pos - 1.0*t + PI2),
-    water::scale * (4.0*pos + 2.0*t),
-    water::scale * (4.0*pos - 2.0*t + PI2),
-    water::scale * (16.0*pos + 4.0*t),
-    water::scale * (16.0*pos - 4.0*t + PI2)
+    water::scale * (pos + 1.00*t),
+    water::scale * (pos - 1.01*t + PI2),
+    water::scale * (pos + 0.50*t),
+    water::scale * (pos - 0.51*t + PI2),
+    water::scale * (pos + 0.25*t),
+    water::scale * (pos - 0.26*t + PI2)
   );
 }
 
